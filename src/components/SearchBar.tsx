@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect, ChangeEvent, MouseEvent } from 'react';
+import { useState, useRef, useEffect, type ChangeEvent } from 'react';
 import { Search, X } from 'lucide-react';
-import { searchProcedures, getCategoryLabel, SearchResult } from '../lib/search';
+import { searchProcedures, getCategoryLabel, type SearchResult } from '../lib/search';
 
 export default function SearchBar() {
   const [query, setQuery] = useState('');
@@ -32,8 +32,8 @@ export default function SearchBar() {
 
   // Handle click outside to close dropdown
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+    function handleClickOutside(event: Event) {
+      if (searchRef.current && event.target && !searchRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     }

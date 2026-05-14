@@ -15,5 +15,14 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
-  }
+  },
+  "exclude": [
+    "avm-navigator",
+    "cerebral-flow-check",
+    "coil-whisperer",
+    "petrous-balloon-guide",
+    "node_modules",
+    ".astro",
+    "dist"
+  ]
 }
