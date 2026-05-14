@@ -1,0 +1,32 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+  icon: string;
+  href: string;
+  tag?: string;
+  riskLevel?: 'low' | 'moderate' | 'high';
+}
+
+const { title, description, icon, href, tag, riskLevel } = Astro.props;
+
+const tagColors: Record<'low' | 'moderate' | 'high', string> = {
+  'low': 'bg-clinical-success/10 text-clinical-success',
+  'moderate': 'bg-clinical-warning/10 text-clinical-warning',
+  'high': 'bg-clinical-danger/10 text-clinical-danger',
+};
+---
+
+<a href={href} class="block bg-white border border-gray-200 rounded-lg p-6 hover:border-primary-500 hover:shadow-lg transition-all duration-200 group">
+  <div class="flex items-start justify-between mb-4">
+    <div class="text-3xl">{icon}</div>
+    {tag && (
+      <span class={`text-xs font-medium px-2 py-1 rounded ${riskLevel ? tagColors[riskLevel] : 'bg-gray-100 text-gray-600'}`}>
+        {tag}
+      </span>
+    )}
+  </div>
+  <h3 class="font-bold text-lg mb-2 group-hover:text-primary-600 transition-colors">{title}</h3>
+  <p class="text-sm text-gray-600 mb-4">{description}</p>
+  <div class="text-primary-600 font-medium text-sm">Learn more →</div>
+</a>
