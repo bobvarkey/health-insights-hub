@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 215 25% 27%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 27%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 27%;
+
+    --primary: 210 100% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 215 25% 27%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 195 100% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 215 27% 92%;
+    --input: 215 27% 92%;
+    --ring: 210 100% 50%;
+
+    --radius: 0.75rem;
+
+    /* Medical UI Colors */
+    --medical-primary: 210 100% 50%;
+    --medical-secondary: 195 100% 50%;
+    --medical-success: 142 76% 36%;
+    --medical-warning: 38 92% 50%;
+    --medical-error: 0 84% 60%;
+    --medical-neutral: 215 20% 65%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(210 100% 50%), hsl(195 100% 50%));
+    --gradient-subtle: linear-gradient(180deg, hsl(210 20% 98%), hsl(210 40% 96%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(210 40% 98%));
+
+    /* Shadows */
+    --shadow-medical: 0 4px 20px -2px hsl(210 100% 50% / 0.1);
+    --shadow-card: 0 2px 10px -1px hsl(215 25% 27% / 0.1);
+    --shadow-elevated: 0 8px 30px -4px hsl(215 25% 27% / 0.15);
+
+    /* Animations */
+    --transition-medical: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Animation keyframes for medical procedures */
+    --animation-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    --animation-bounce: bounce 1s infinite;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 215 28% 17%;
+    --foreground: 210 20% 98%;
+
+    --card: 215 28% 20%;
+    --card-foreground: 210 20% 98%;
+
+    --popover: 215 28% 20%;
+    --popover-foreground: 210 20% 98%;
+
+    --primary: 210 100% 60%;
+    --primary-foreground: 215 28% 17%;
+
+    --secondary: 215 25% 25%;
+    --secondary-foreground: 210 20% 98%;
+
+    --muted: 215 25% 25%;
+    --muted-foreground: 215 20% 70%;
+
+    --accent: 195 100% 60%;
+    --accent-foreground: 215 28% 17%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 20% 98%;
+
+    --border: 215 25% 25%;
+    --input: 215 25% 25%;
+    --ring: 210 100% 60%;
+
+    /* Medical Dark Theme */
+    --medical-primary: 210 100% 60%;
+    --medical-secondary: 195 100% 60%;
+    --medical-success: 142 70% 45%;
+    --medical-warning: 38 90% 60%;
+    --medical-error: 0 84% 60%;
+    --medical-neutral: 215 20% 70%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(210 100% 60%), hsl(195 100% 60%));
+    --gradient-subtle: linear-gradient(180deg, hsl(215 28% 17%), hsl(215 25% 25%));
+    --gradient-card: linear-gradient(145deg, hsl(215 28% 20%), hsl(215 25% 18%));
+
+    --shadow-medical: 0 4px 20px -2px hsl(210 100% 60% / 0.2);
+    --shadow-card: 0 2px 10px -1px hsl(0 0% 0% / 0.3);
+    --shadow-elevated: 0 8px 30px -4px hsl(0 0% 0% / 0.4);
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Protocol animation components */
+  .technique-step {
+    @apply relative p-4 bg-secondary/20 rounded-lg border border-secondary/40 transition-all duration-500;
+  }
+  
+  .technique-step.active {
+    @apply bg-medical-primary/10 border-medical-primary/30 shadow-medical scale-105;
+  }
+  
+  .stent-animation {
+    @apply w-full h-32 bg-gradient-to-r from-medical-primary/20 to-medical-secondary/20 rounded-lg relative overflow-hidden;
+  }
+  
+  .stent-deployment {
+    @apply absolute inset-0 bg-gradient-to-r from-medical-primary to-medical-secondary rounded opacity-30;
+    animation: deployStent 3s ease-in-out infinite;
+  }
+  
+  .coil-placement {
+    @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-medical-warning rounded-full;
+    animation: placeCoil 2s ease-in-out infinite;
+  }
+  
+  @keyframes deployStent {
+    0% { transform: scaleX(0); opacity: 0.1; }
+    50% { transform: scaleX(0.7); opacity: 0.5; }
+    100% { transform: scaleX(1); opacity: 0.3; }
+  }
+  
+  @keyframes placeCoil {
+    0%, 100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; }
+    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+  }
+  
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+  }
+}
