@@ -1,0 +1,24 @@
+
+> interventional-neuro-2026@0.1.0 dev
+> astro dev
+
+20:39:09 [types] Generated 8ms
+20:39:09 [vite] Port 4321 is in use, trying another one...
+20:39:09 [vite] Port 4322 is in use, trying another one...
+
+ astro  v4.16.19 ready in 1674 ms
+
+┃ Local    http://localhost:4323/
+┃ Network  use --host to expose
+
+20:39:09 watching for file changes...
+20:39:29 [200] / 30ms
+20:39:29 [404] /clinical-scenarios/ 2ms
+20:39:29 [404] /tools/ 1ms
+20:39:29 [404] /learning-resources/ 1ms
+20:39:29 [404] /about/ 1ms
+05:25:46 [watch] src/components/Navigation.astro
+05:31:51 [watch] src/pages/learning-resources/index.astro
+05:32:05 [watch] src/lib/search.ts
+05:32:12 [watch] src/lib/search.ts
+05:32:18 [watch] src/lib/search.ts

@@ -2,7 +2,7 @@ export interface SearchResult {
   id: string;
   title: string;
   description: string;
-  category: 'procedure' | 'decision-tree' | 'calculator' | 'classification';
+  category: 'procedure' | 'decision-tree' | 'calculator' | 'classification' | 'trial' | 'resource';
   url: string;
   type: string;
 }
@@ -73,6 +73,46 @@ export const searchIndex: SearchResult[] = [
     url: '/tools/procedural-checklists/icp-management/',
     type: 'Procedural Checklist',
   },
+  {
+    id: 'clinical-trials',
+    title: 'Clinical Trials Reference',
+    description: 'Comprehensive database of landmark and emerging interventional neurology trials',
+    category: 'resource',
+    url: '/learning-resources/clinical-trials/',
+    type: 'Trials Reference',
+  },
+  {
+    id: 'mr-clean-trial',
+    title: 'MR CLEAN Trial',
+    description: 'Landmark mechanical thrombectomy trial demonstrating efficacy in acute ischemic stroke',
+    category: 'trial',
+    url: '/learning-resources/clinical-trials/',
+    type: 'Clinical Trial',
+  },
+  {
+    id: 'dawn-trial',
+    title: 'DAWN Trial',
+    description: 'Extended window mechanical thrombectomy trial for late presenting strokes',
+    category: 'trial',
+    url: '/learning-resources/clinical-trials/',
+    type: 'Clinical Trial',
+  },
+  {
+    id: 'swift-prime-trial',
+    title: 'SWIFT PRIME Trial',
+    description: 'Mechanical thrombectomy with Solitaire FR device for acute ischemic stroke',
+    category: 'trial',
+    url: '/learning-resources/clinical-trials/',
+    type: 'Clinical Trial',
+  },
+  {
+    id: 'aruba-trial',
+    title: 'ARUBA Trial',
+    description: 'Randomized trial of intervention vs medical management for unruptured brain AVMs',
+    category: 'trial',
+    url: '/learning-resources/clinical-trials/',
+    type: 'Clinical Trial',
+  },
 ];
 
 export function searchProcedures(query: string): SearchResult[] {
@@ -96,6 +136,8 @@ export function getCategoryLabel(category: SearchResult['category']): string {
     'decision-tree': 'Decision Tree',
     calculator: 'Calculator',
     classification: 'Classification',
+    trial: 'Clinical Trial',
+    resource: 'Resource',
   };
   return labels[category];
 }
