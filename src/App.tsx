@@ -12,6 +12,8 @@ import AscvdEmr from "@/calculators/lipids/AscvdRisk";
 import LipidCalculator from "@/calculators/lipids/LipidPanel";
 import GfrCalculator from "@/calculators/htn/GfrCalculator";
 import DrugInteractionChecker from "@/calculators/htn/DrugInteractions";
+import BmiCalculator from "@/calculators/obesity/BmiCalculator";
+import WaistHeightRatio from "@/calculators/obesity/WaistHeightRatio";
 import NotFound from "@/components/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +34,8 @@ const App = () => (
           <Route path="/ascvd-risk" element={<AscvdEmr />} />
           <Route path="/gfr-calculator" element={<GfrCalculator />} />
           <Route path="/drug-interactions" element={<DrugInteractionChecker />} />
+          <Route path="/obesity/bmi-calculator" element={<BmiCalculator />} />
+          <Route path="/obesity/waist-height-ratio" element={<WaistHeightRatio />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

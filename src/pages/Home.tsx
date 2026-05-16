@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Activity, Droplets, Heart } from "lucide-react";
+import { Activity, Droplets, Heart, Scale } from "lucide-react";
 
 const categories = [
   {
@@ -31,6 +31,15 @@ const categories = [
       { name: "Drug Interactions", path: "/drug-interactions" },
     ],
   },
+  {
+    id: "obesity",
+    label: "Obesity",
+    icon: Scale,
+    calculators: [
+      { name: "BMI Calculator", path: "/obesity/bmi-calculator" },
+      { name: "Waist-to-Height Ratio", path: "/obesity/waist-height-ratio" },
+    ],
+  },
 ];
 
 export default function Home() {
@@ -44,7 +53,7 @@ export default function Home() {
       </header>
 
       <main className="mx-auto max-w-5xl px-6 py-10">
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-4">
           {categories.map(({ id, label, icon: Icon, calculators }) => (
             <div key={id} className="clinical-card space-y-4">
               <div className="flex items-center gap-2.5">
