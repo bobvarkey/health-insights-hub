@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProcedureCard from '../../components/ProcedureCard.astro';
+
+const checklists = [
+  {
+    title: 'Cerebral Angiography',
+    description: 'Access planning, angiographic run sequence, reporting structure, and closure checks.',
+    icon: '🧠',
+    href: '/tools/procedural-checklists',
+    tag: 'Diagnostic',
+  },
+  {
+    title: 'Pre-procedure Safety',
+    description: 'Consent, antiplatelet status, renal risk, contrast allergy, anticoagulation, and equipment readiness.',
+    icon: '✅',
+    href: '/tools/procedural-checklists',
+    tag: 'Safety',
+  },
+  {
+    title: 'Complication Response',
+    description: 'Intraprocedural thrombosis, perforation, vasospasm, access-site events, and escalation prompts.',
+    icon: '⚡',
+    href: '/tools/procedural-checklists',
+    tag: 'Response',
+  },
+];
+---
+
+<BaseLayout title="Procedure Checklists">
+  <section class="bg-white px-4 py-12">
+    <div class="mx-auto max-w-6xl">
+      <p class="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-primary-700">Clinical module</p>
+      <h1 class="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">Procedure Checklists</h1>
+      <p class="mb-8 max-w-3xl text-lg text-gray-700">
+        Checklist workspace for cerebral angiography, preparation, intraprocedural safety, complication tracking, and post-procedure handoff.
+      </p>
+      <div class="grid gap-6 md:grid-cols-3">
+        {checklists.map((item) => <ProcedureCard {...item} />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

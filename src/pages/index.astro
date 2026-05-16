@@ -5,201 +5,190 @@ import ProcedureCard from '../components/ProcedureCard.astro';
 import QuickAccessSection from '../components/QuickAccessSection.astro';
 
 const quickLinks = [
-  { title: 'Cerebral Angiogram', icon: '🧠', href: '/tools/procedural-checklists/cerebral-angiogram/' },
-  { title: 'SAH Management', icon: '⚡', href: '/clinical-scenarios/sah/' },
-  { title: 'AVM Evaluation', icon: '🎯', href: '/tools/vascular-assessment/avm-evaluation/' },
-  { title: 'ICA Balloon Test', icon: '🛡️', href: '/tools/procedural-checklists/ica-balloon-test/' },
-  { title: 'Aneurysm Decision', icon: '🩹', href: '/tools/technique-strategy/' },
+  { title: 'Device Compatibility', icon: '🔧', href: '/tools/devices' },
+  { title: 'Cerebral Angiography', icon: '🧠', href: '/tools/procedural-checklists' },
+  { title: 'AVM Evaluation', icon: '🎯', href: '/tools/vascular-assessment' },
+  { title: 'Aneurysm Coiling', icon: '🌀', href: '/tools/technique-strategy' },
+  { title: 'Trials Reference', icon: '📚', href: '/learning-resources/clinical-trials' },
 ];
 
 const scenarios = [
   {
-    title: 'Patient with Subarachnoid Hemorrhage',
-    description: 'Walk through SAH diagnosis, imaging interpretation, and endovascular decision-making.',
-    icon: '🧠',
-    href: '/clinical-scenarios/sah/',
-    tag: 'High Risk',
+    title: 'Unruptured Aneurysm',
+    description: 'Risk screen, morphology review, location factors, and treatment planning prompts.',
+    icon: '🩺',
+    href: '/tools/devices',
+    tag: 'Prediction',
+    riskLevel: 'moderate' as const,
+  },
+  {
+    title: 'DAVF',
+    description: 'Cortical venous reflux, venous ectasia, hemorrhage context, and symptom-risk triage.',
+    icon: '🧬',
+    href: '/tools/devices',
+    tag: 'Prediction',
     riskLevel: 'high' as const,
   },
   {
-    title: 'Unruptured Aneurysm Detection',
-    description: 'Assessment of incidental findings and decision framework for treatment.',
-    icon: '⚡',
-    href: '/clinical-scenarios/unruptured-aneurysm/',
-    tag: 'Clinical Case',
-  },
-  {
-    title: 'AVM Pre-Procedure Planning',
-    description: 'Classification using Spetzler-Martin and evaluation for embolization candidacy.',
+    title: 'AVM Planning',
+    description: 'Classification using size, eloquence, venous drainage, rupture context, and treatment fit.',
     icon: '🎯',
-    href: '/clinical-scenarios/avm-planning/',
+    href: '/tools/vascular-assessment',
     tag: 'Planning',
   },
 ];
 
-const tools = [
+const platformModules = [
   {
-    title: 'Vascular Assessment',
-    description: 'Classification systems, risk stratification, and diagnostic frameworks.',
-    icon: '📊',
-    href: '/tools/vascular-assessment/',
-    tag: '4 Tools',
+    title: 'Cerebral Angiography',
+    description: 'Diagnostic workflow, angiogram reporting, access planning, and post-procedure checks.',
+    icon: '🧠',
+    href: '/tools/procedural-checklists',
+    tag: 'Core Workflow',
   },
   {
-    title: 'Procedural Checklists',
-    description: 'Step-by-step protocols for common interventional procedures.',
+    title: 'Procedure Checklists',
+    description: 'Preparation, intraprocedural safety, complication tracking, and handoff support.',
     icon: '✅',
-    href: '/tools/procedural-checklists/',
+    href: '/tools/procedural-checklists',
     tag: '8 Procedures',
   },
   {
-    title: 'Technique & Strategy',
-    description: 'Decision trees, technique comparisons, and treatment strategies.',
-    icon: '🧬',
-    href: '/tools/technique-strategy/',
-    tag: 'Interactive',
+    title: 'AVM Evaluation',
+    description: 'Spetzler-Martin factors, rupture context, embolization planning, and treatment considerations.',
+    icon: '🎯',
+    href: '/tools/vascular-assessment',
+    tag: 'Planning',
+  },
+  {
+    title: 'Aneurysm Coiling',
+    description: 'Coiling strategy, adjunctive stents, device sizing, technique comparison, and recurrence grading.',
+    icon: '🌀',
+    href: '/tools/technique-strategy',
+    tag: 'Strategy',
+  },
+  {
+    title: 'Device Compatibility',
+    description: 'NeuroTool-informed ID/OD checks, multi-device packing, DMSO status, and device specifications.',
+    icon: '🔧',
+    href: '/tools/devices',
+    tag: '1,991 Devices',
+  },
+  {
+    title: 'Trials Reference',
+    description: 'Neurointerventional trials for aneurysm, AVM, carotid disease, stroke, and technique selection.',
+    icon: '📚',
+    href: '/learning-resources/clinical-trials',
+    tag: 'Evidence',
   },
 ];
 
 const resources = [
   {
-    title: 'Decision Trees',
-    description: 'Interactive flowcharts for treatment decisions and risk assessment.',
-    icon: '📋',
-    href: '/learning-resources/decision-trees/',
-    tag: '15+ Trees',
+    title: 'Prediction Tools',
+    description: 'Screens for unruptured aneurysm, DAVF, AVM, carotid stenosis, and intracranial hypotension.',
+    icon: '📈',
+    href: '/tools/devices',
+    tag: '5 Models',
   },
   {
-    title: 'Calculators & Scoring',
-    description: 'Clinical scoring tools, risk calculators, and assessment instruments.',
-    icon: '🧮',
-    href: '/learning-resources/calculators/',
-    tag: 'Interactive',
+    title: 'Vascular Assessment',
+    description: 'Classification systems, risk stratification, and diagnostic frameworks.',
+    icon: '📊',
+    href: '/tools/vascular-assessment',
+    tag: 'Frameworks',
   },
   {
-    title: 'Quick Reference Cards',
-    description: 'Printable summaries and reference materials for clinical use.',
-    icon: '📑',
-    href: '/learning-resources/quick-reference/',
-    tag: 'PDF Downloads',
+    title: 'Learning Resources',
+    description: 'Decision trees, calculators, quick reference material, and evidence summaries.',
+    icon: '📖',
+    href: '/learning-resources',
+    tag: 'Reference',
   },
 ];
 ---
 
-<BaseLayout title="Home - Interventional Neuro 2026">
-  <!-- Hero Section -->
+<BaseLayout title="Comprehensive Neurointerventional Platform">
   <section class="bg-gradient-to-r from-primary-50 to-primary-100 py-16 md:py-24 px-4">
-    <div class="max-w-4xl mx-auto text-center">
+    <div class="max-w-5xl mx-auto text-center">
       <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-        Clinical Reference for Interventional Neurology
+        Comprehensive Neurointerventional Platform
       </h1>
-      <p class="text-lg md:text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
-        Comprehensive platform for interventional neurology residents with evidence-based guidelines, decision trees, and clinical tools.
+      <p class="text-lg md:text-xl text-gray-700 mb-8 max-w-3xl mx-auto">
+        Specialized clinical tools in one unified application: cerebral angiography, procedure checklists, AVM evaluation, aneurysm coiling, device compatibility, prediction screens, and trials reference.
       </p>
-      <a href="#quick-access" class="inline-block bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-8 rounded-lg transition-colors">
-        Get Started
-      </a>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a href="/tools/devices" class="inline-block bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-8 rounded-lg transition-colors">
+          Open Device Checker
+        </a>
+        <a href="#platform-modules" class="inline-block bg-white hover:bg-gray-100 text-primary-700 font-bold py-3 px-8 rounded-lg transition-colors border border-primary-200">
+          Browse Modules
+        </a>
+      </div>
     </div>
   </section>
 
-  <!-- Stats Section -->
   <section class="py-12 md:py-16 px-4 bg-white">
     <div class="max-w-6xl mx-auto">
       <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-8 text-center">Platform Overview</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatsCard number="50+" label="Clinical Tools" />
+        <StatsCard number="1,991" label="Device Specs" />
         <StatsCard number="25+" label="Procedure Guides" />
-        <StatsCard number="15+" label="Decision Trees" />
+        <StatsCard number="5" label="Prediction Tools" />
         <StatsCard number="100+" label="Evidence References" />
       </div>
     </div>
   </section>
 
-  <!-- Quick Access Section -->
   <section id="quick-access" class="py-12 md:py-16 px-4 bg-gray-50">
     <div class="max-w-6xl mx-auto">
       <QuickAccessSection
         title="Quick Access"
-        description="Jump to the most commonly used tools and resources"
+        description="Jump to the most commonly used neurointerventional modules"
         links={quickLinks}
       />
     </div>
   </section>
 
-  <!-- Clinical Scenarios Section -->
-  <section class="py-12 md:py-16 px-4 bg-white">
+  <section id="platform-modules" class="py-12 md:py-16 px-4 bg-white">
     <div class="max-w-6xl mx-auto">
       <div class="mb-12">
-        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">📚 Clinical Scenarios</h2>
-        <p class="text-gray-600">Learn through real-world case examples and decision frameworks</p>
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Platform Modules</h2>
+        <p class="text-gray-600">A unified workspace for device selection, procedural planning, disease-specific prediction, and evidence lookup</p>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {scenarios.map((scenario) => (
-          <ProcedureCard
-            title={scenario.title}
-            description={scenario.description}
-            icon={scenario.icon}
-            href={scenario.href}
-            tag={scenario.tag}
-            riskLevel={scenario.riskLevel}
-          />
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {platformModules.map((tool) => (
+          <ProcedureCard {...tool} />
         ))}
       </div>
     </div>
   </section>
 
-  <!-- Tools by Category Section -->
   <section class="py-12 md:py-16 px-4 bg-gray-50">
     <div class="max-w-6xl mx-auto">
       <div class="mb-12">
-        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">🛠️ Tools by Category</h2>
-        <p class="text-gray-600">Access comprehensive tools organized by clinical domain</p>
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Prediction & Scenario Screens</h2>
+        <p class="text-gray-600">Condition-specific screens connected to planning and device selection workflows</p>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {tools.map((tool) => (
-          <ProcedureCard
-            title={tool.title}
-            description={tool.description}
-            icon={tool.icon}
-            href={tool.href}
-            tag={tool.tag}
-          />
+        {scenarios.map((scenario) => (
+          <ProcedureCard {...scenario} />
         ))}
       </div>
     </div>
   </section>
 
-  <!-- Learning Resources Section -->
   <section class="py-12 md:py-16 px-4 bg-white">
     <div class="max-w-6xl mx-auto">
       <div class="mb-12">
-        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">📖 Learning Resources</h2>
-        <p class="text-gray-600">Interactive tools and reference materials for clinical decision-making</p>
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">More Clinical Resources</h2>
+        <p class="text-gray-600">Supporting references for day-to-day neurointerventional decision-making</p>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         {resources.map((resource) => (
-          <ProcedureCard
-            title={resource.title}
-            description={resource.description}
-            icon={resource.icon}
-            href={resource.href}
-            tag={resource.tag}
-          />
+          <ProcedureCard {...resource} />
         ))}
       </div>
-    </div>
-  </section>
-
-  <!-- CTA Section -->
-  <section class="py-12 md:py-16 px-4 bg-gradient-to-r from-primary-600 to-primary-700">
-    <div class="max-w-4xl mx-auto text-center text-white">
-      <h2 class="text-2xl md:text-3xl font-bold mb-4">Ready to Explore?</h2>
-      <p class="text-lg mb-8 text-white/90">
-        Browse our comprehensive library of tools, guidelines, and clinical resources to enhance your interventional neurology practice.
-      </p>
-      <a href="/tools/" class="inline-block bg-white hover:bg-gray-100 text-primary-600 font-bold py-3 px-8 rounded-lg transition-colors">
-        Explore All Tools
-      </a>
     </div>
   </section>
 </BaseLayout>
