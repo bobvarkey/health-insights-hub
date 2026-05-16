@@ -24,61 +24,60 @@
   h4 { @apply text-base md:text-lg font-semibold; }
 
   :root {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
+    /* Dark clinical theme — navy/slate background, always-on dark mode */
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 8%;
-    --card-foreground: 0 0% 100%;
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 222 47% 8%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 280 100% 50%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 200 100% 50%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 0 0% 30%;
-    --muted-foreground: 0 0% 70%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 270 60% 40%;
-    --accent-foreground: 0 0% 95%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 280 100% 50%;
+    --border: 217 33% 25%;
+    --input: 217 33% 25%;
+    --ring: 224 76% 48%;
 
     --radius: 0.75rem;
 
-    /* Custom tokens */
+    /* Plate method tokens */
     --plate-veggie: 142 60% 45%;
     --plate-protein: 0 70% 55%;
     --plate-grain: 45 90% 55%;
     --plate-dairy: 210 60% 55%;
 
-    --success: 142 60% 40%;
-    --success-foreground: 0 0% 100%;
+    /* Clinical result tokens */
+    --success: 160 84% 39%;
+    --success-foreground: 210 40% 98%;
     --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 0%;
-    --info: 210 70% 50%;
-    --info-foreground: 0 0% 100%;
+    --warning-foreground: 210 40% 98%;
+    --info: 217 91% 60%;
+    --info-foreground: 210 40% 98%;
 
-    --gradient-primary: linear-gradient(135deg, #D946EF, #06B6D4);
-    --gradient-warm: linear-gradient(135deg, #FF6600, #FFB300);
-    --gradient-hero: linear-gradient(160deg, #D946EF 0%, #06B6D4 100%);
-
-    --sidebar-background: 0 0% 5%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 280 100% 50%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 20%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 280 100% 50%;
+    /* Sidebar tokens */
+    --sidebar-background: 222 47% 4%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 217 33% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 25%;
+    --sidebar-ring: 224 76% 48%;
   }
 }
 
@@ -87,10 +86,10 @@
     @apply border-border;
   }
   html {
-    @apply bg-black;
+    @apply bg-background;
   }
   body {
-    @apply bg-black text-foreground font-sans antialiased;
+    @apply bg-background text-foreground font-sans antialiased;
     font-family: 'DM Sans', system-ui, sans-serif;
   }
   h1, h2, h3, h4, h5, h6 {
@@ -99,23 +98,8 @@
 }
 
 @layer components {
-  .glow-fuchsia {
-    box-shadow: 0 0 40px 10px rgba(217, 70, 239, 0.3);
-  }
-  .glow-cyan {
-    box-shadow: 0 0 40px 10px rgba(6, 182, 212, 0.3);
-  }
-  .glow-magenta {
-    box-shadow: 0 0 20px 5px rgba(255, 0, 255, 0.4);
-  }
-  .neon-text {
-    text-shadow: 0 0 10px currentColor;
-  }
   .clinical-card {
-    @apply bg-card rounded-xl border shadow-sm p-5 transition-all duration-200;
-  }
-  .clinical-card:hover {
-    @apply shadow-md bg-card/80 border-border/60;
+    @apply rounded-xl border border-border bg-card p-5 shadow-sm;
   }
   .stat-badge {
     @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium;
@@ -133,7 +117,6 @@
     @apply shadow-sm scale-105;
   }
   .section-title {
-    @apply text-lg font-semibold tracking-tight;
-    font-family: 'Space Grotesk', system-ui, sans-serif;
+    @apply text-sm font-heading font-semibold text-foreground;
   }
 }
