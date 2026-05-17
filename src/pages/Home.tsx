@@ -89,21 +89,20 @@ const fullForms: Record<string, string> = {
 };
 
 function AbbreviationLabel({ abbr, fullForm }: { abbr: string; fullForm?: string }) {
-  const [isOpen, setIsOpen] = useState(false);
   const displayFullForm = fullForm || fullForms[abbr] || abbr;
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <CollapsibleTrigger asChild>
-        <button className="group flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
-          {abbr}
-          <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
-        </button>
-      </CollapsibleTrigger>
-      <CollapsibleContent>
-        <span className="text-[10px] text-muted-foreground/70 ml-4">{displayFullForm}</span>
-      </CollapsibleContent>
-    </Collapsible>
+    <div className="group relative inline-block">
+      <button className="flex items-center gap-0.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-help">
+        {abbr}
+        <span className="opacity-0 group-hover:opacity-100 transition-opacity"><Info className="h-3 w-3 text-muted-foreground/50" /></span>
+      </button>
+      <div className="absolute left-0 bottom-full mb-1 hidden group-hover:block z-10">
+        <div className="bg-popover text-popover-foreground text-[10px] px-2 py-1 rounded shadow-lg border border-border whitespace-nowrap">
+          {displayFullForm}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -771,8 +770,6 @@ export default function Home() {
         <span className="ml-auto text-sm text-muted-foreground/60">ADA · ESC · AHA · ACC</span>
       </div>
 
-      <FullFormsLegend />
-
       <OCRUpload onValuesExtracted={(values) => {
         if (values.fg) setDmInputs(prev => ({ ...prev, fg: values.fg }));
         if (values.a1c) setDmInputs(prev => ({ ...prev, a1c: values.a1c }));
@@ -787,83 +784,8 @@ export default function Home() {
         if (values.tg) setLipInputs(prev => ({ ...prev, tg: values.tg }));
       }} />
 
-      {/* Global Associated Conditions */}
-      <Card className="max-w-6xl mx-auto px-6 mb-6 border-border/60">
-        <CardHeader className="pb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center">
-              <Activity className="h-4 w-4 text-white" />
-            </div>
-            <div>
-              <CardTitle className="text-base">Associated Conditions</CardTitle>
-              <p className="text-xs text-muted-foreground">Select all relevant comorbidities first</p>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-red-400 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-400" />Diabetes
-              </Label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { key: "cvd", label: "CVD", state: "dm" },
-                  { key: "hf", label: "Heart Failure", state: "dm" },
-                  { key: "ckd", label: "CKD", state: "dm" },
-                  { key: "obesity", label: "Obesity", state: "dm" },
-                ].map(({ key, label }) => (
-                  <label key={`dm-${key}`} className="flex items-center gap-1.5 px-2 py-1 bg-muted/40 rounded border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
-                    <Checkbox checked={dmChecks[key as keyof typeof dmChecks]} onCheckedChange={checked => setDmChecks({ ...dmChecks, [key]: checked as boolean })} className="h-3 w-3" />
-                    <span className="text-[10px]">{label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-orange-400 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />Hypertension
-              </Label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { key: "dm", label: "DM" },
-                  { key: "ckd", label: "CKD" },
-                  { key: "cad", label: "CAD" },
-                  { key: "stroke", label: "Prior Stroke" },
-                  { key: "hf", label: "HF" },
-                ].map(({ key, label }) => (
-                  <label key={`htn-${key}`} className="flex items-center gap-1.5 px-2 py-1 bg-muted/40 rounded border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
-                    <Checkbox checked={htnChecks[key as keyof typeof htnChecks]} onCheckedChange={checked => setHtnChecks({ ...htnChecks, [key]: checked as boolean })} className="h-3 w-3" />
-                    <span className="text-[10px]">{label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-blue-400 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />Lipids
-              </Label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { key: "dm", label: "DM" },
-                  { key: "smoker", label: "Smoker" },
-                  { key: "htn", label: "HTN" },
-                  { key: "fhx", label: "Family Hx" },
-                  { key: "ascvd", label: "ASCVD" },
-                ].map(({ key, label }) => (
-                  <label key={`lip-${key}`} className="flex items-center gap-1.5 px-2 py-1 bg-muted/40 rounded border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
-                    <Checkbox checked={lipChecks[key as keyof typeof lipChecks]} onCheckedChange={checked => setLipChecks({ ...lipChecks, [key]: checked as boolean })} className="h-3 w-3" />
-                    <span className="text-[10px]">{label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-violet-400 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />Obesity
+      {/* Grid */}
+      <div className="max-w-6xl mx-auto px-6 pb-16 grid grid-cols-1 md:grid-cols-2 gap-5">
               </Label>
               <div className="flex flex-wrap gap-2">
                 {[
@@ -899,6 +821,24 @@ export default function Home() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Associated Conditions */}
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-muted-foreground">Associated Conditions</Label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { key: "cvd", label: "CVD" },
+                  { key: "hf", label: "Heart Failure" },
+                  { key: "ckd", label: "CKD" },
+                  { key: "obesity", label: "Obesity" },
+                ].map(({ key, label }) => (
+                  <label key={key} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
+                    <Checkbox checked={dmChecks[key as keyof typeof dmChecks]} onCheckedChange={checked => setDmChecks({ ...dmChecks, [key]: checked as boolean })} className="h-3.5 w-3.5" />
+                    <span className="text-xs">{label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
             {/* Essential Labs */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
@@ -1008,6 +948,25 @@ export default function Home() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Associated Conditions */}
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-muted-foreground">Associated Conditions</Label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { key: "dm", label: "Diabetes" },
+                  { key: "ckd", label: "CKD" },
+                  { key: "cad", label: "CAD" },
+                  { key: "stroke", label: "Prior Stroke" },
+                  { key: "hf", label: "Heart Failure" },
+                ].map(({ key, label }) => (
+                  <label key={key} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
+                    <Checkbox checked={htnChecks[key as keyof typeof htnChecks]} onCheckedChange={checked => setHtnChecks({ ...htnChecks, [key]: checked as boolean })} className="h-3.5 w-3.5" />
+                    <span className="text-xs">{label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
             {/* Essential Vitals */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
@@ -1078,6 +1037,25 @@ export default function Home() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Risk Factors */}
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-muted-foreground">Risk Factors</Label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { key: "dm", label: "Diabetes" },
+                  { key: "smoker", label: "Smoker" },
+                  { key: "htn", label: "HTN" },
+                  { key: "fhx", label: "Family History" },
+                  { key: "ascvd", label: "ASCVD" },
+                ].map(({ key, label }) => (
+                  <label key={key} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
+                    <Checkbox checked={lipChecks[key as keyof typeof lipChecks]} onCheckedChange={checked => setLipChecks({ ...lipChecks, [key]: checked as boolean })} className="h-3.5 w-3.5" />
+                    <span className="text-xs">{label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
             {/* Essential Labs */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
@@ -1139,6 +1117,25 @@ export default function Home() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Metabolic Complications */}
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-muted-foreground">Metabolic Complications</Label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { key: "dm", label: "Type 2 DM" },
+                  { key: "htn", label: "HTN" },
+                  { key: "dyslipidemia", label: "Dyslipidemia" },
+                  { key: "osa", label: "OSA" },
+                  { key: "nafld", label: "NAFLD" },
+                ].map(({ key, label }) => (
+                  <label key={key} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
+                    <Checkbox checked={obeChecks[key as keyof typeof obeChecks]} onCheckedChange={checked => setObeChecks({ ...obeChecks, [key]: checked as boolean })} className="h-3.5 w-3.5" />
+                    <span className="text-xs">{label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
             <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
               <p className="text-xs font-medium text-muted-foreground uppercase mb-2">BMI Calculator</p>
               <div className="grid grid-cols-2 gap-3 mb-2">
