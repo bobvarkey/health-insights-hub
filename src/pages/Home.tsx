@@ -1040,6 +1040,165 @@ export default function Home() {
               </CollapsibleContent>
             </Collapsible>
 
+            {/* Insulin Dosing Guide */}
+            <Collapsible className="border border-border/40 rounded-lg overflow-hidden">
+              <CollapsibleTrigger asChild>
+                <button className="w-full px-3 py-2 flex items-center justify-between bg-muted/20 hover:bg-muted/30 transition-colors text-xs font-medium text-muted-foreground">
+                  <span className="flex items-center gap-2">
+                    <Syringe className="h-3.5 w-3.5" />
+                    Insulin Dosing Guide
+                  </span>
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="p-3 space-y-4 bg-muted/10">
+                {/* Insulin Types Quick Reference */}
+                <div className="p-2.5 rounded-lg bg-muted/30 border border-border/50">
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase mb-2">Common Insulin Types</p>
+                  <div className="grid grid-cols-2 gap-2 text-[10px]">
+                    <div className="p-2 rounded bg-background/50">
+                      <p className="font-medium text-foreground">Rapid-Acting</p>
+                      <p className="text-muted-foreground">Aspart (Novolog), Lispro (Humalog), Glulisine (Apidra)</p>
+                      <p className="text-[9px] text-muted-foreground mt-0.5">Onset: 15 min | Peak: 1-2h | Duration: 3-5h</p>
+                    </div>
+                    <div className="p-2 rounded bg-background/50">
+                      <p className="font-medium text-foreground">Short-Acting</p>
+                      <p className="text-muted-foreground">Regular (Humulin R, Novolin R)</p>
+                      <p className="text-[9px] text-muted-foreground mt-0.5">Onset: 30 min | Peak: 2-4h | Duration: 6-8h</p>
+                    </div>
+                    <div className="p-2 rounded bg-background/50">
+                      <p className="font-medium text-foreground">Intermediate</p>
+                      <p className="text-muted-foreground">NPH (Humulin N, Novolin N)</p>
+                      <p className="text-[9px] text-muted-foreground mt-0.5">Onset: 1-2h | Peak: 4-8h | Duration: 10-16h</p>
+                    </div>
+                    <div className="p-2 rounded bg-background/50">
+                      <p className="font-medium text-foreground">Long-Acting</p>
+                      <p className="text-muted-foreground">Glargine (Lantus, Basaglar), Detemir (Levemir)</p>
+                      <p className="text-[9px] text-muted-foreground mt-0.5">Onset: 1-2h | Peak: None | Duration: 20-24h</p>
+                    </div>
+                    <div className="p-2 rounded bg-background/50 col-span-2">
+                      <p className="font-medium text-foreground">Ultra Long-Acting</p>
+                      <p className="text-muted-foreground">Degludec (Tresiba), Glargine U300 (Toujeo)</p>
+                      <p className="text-[9px] text-muted-foreground mt-0.5">Onset: 30-90 min | Peak: None | Duration: 36-42h</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mealtime Insulin Calculator */}
+                <div className="p-2.5 rounded-lg bg-muted/30 border border-border/50">
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase mb-2">Mealtime Insulin (Bolus)</p>
+                  <p className="text-[10px] text-muted-foreground mb-2">Total dose = Carb coverage + Correction dose</p>
+
+                  <div className="space-y-2">
+                    <div className="p-2 rounded bg-background/50">
+                      <p className="text-[10px] font-medium text-foreground mb-1">1. Carb Coverage Dose</p>
+                      <p className="text-[9px] text-muted-foreground">Grams of carbohydrate ÷ insulin-to-carb ratio</p>
+                      <div className="mt-1 p-1.5 rounded bg-muted/50">
+                        <p className="text-[9px] text-muted-foreground">Example: 60g carbs ÷ ratio 1:10 = <span className="font-medium text-foreground">6 units</span></p>
+                      </div>
+                    </div>
+
+                    <div className="p-2 rounded bg-background/50">
+                      <p className="text-[10px] font-medium text-foreground mb-1">2. Correction Dose</p>
+                      <p className="text-[9px] text-muted-foreground">(Current glucose - target) ÷ correction factor</p>
+                      <div className="mt-1 p-1.5 rounded bg-muted/50">
+                        <p className="text-[9px] text-muted-foreground">Example: (220 - 120) ÷ 50 = <span className="font-medium text-foreground">2 units</span></p>
+                      </div>
+                    </div>
+
+                    <div className="p-2 rounded bg-background/50 border border-red-500/20">
+                      <p className="text-[10px] font-medium text-foreground">Total Meal Dose</p>
+                      <p className="text-[9px] text-muted-foreground">6 units (carb) + 2 units (correction) = <span className="font-medium text-red-500">8 units</span></p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Total Daily Insulin Estimate */}
+                <div className="p-2.5 rounded-lg bg-muted/30 border border-border/50">
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase mb-2">Total Daily Insulin (TDI) Estimates</p>
+                  <div className="space-y-1.5 text-[10px]">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Weight-based:</span>
+                      <span className="font-medium text-foreground">0.55 units/kg/day</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Alternative:</span>
+                      <span className="font-medium text-foreground">Weight (lb) ÷ 4</span>
+                    </div>
+                    <div className="mt-2 p-1.5 rounded bg-background/50">
+                      <p className="text-[9px] text-muted-foreground">50% basal + 50% prandial (divided among meals)</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Starting Doses */}
+                <div className="p-2.5 rounded-lg bg-muted/30 border border-border/50">
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase mb-2">Starting Doses</p>
+                  <div className="space-y-2 text-[10px]">
+                    <div className="p-2 rounded bg-background/50">
+                      <p className="font-medium text-foreground mb-0.5">Basal Insulin</p>
+                      <ul className="text-muted-foreground space-y-0.5">
+                        <li>• Start: 10 units daily OR 0.1-0.2 units/kg/day</li>
+                        <li>• Titrate: +2 units every 3 days until FBG 80-130 mg/dL</li>
+                      </ul>
+                    </div>
+                    <div className="p-2 rounded bg-background/50">
+                      <p className="font-medium text-foreground mb-0.5">Prandial Insulin</p>
+                      <ul className="text-muted-foreground space-y-0.5">
+                        <li>• Start: 5 units before largest meal</li>
+                        <li>• Or: 10% of basal dose before largest meal</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Insulin-to-Carb Ratio */}
+                <div className="p-2.5 rounded-lg bg-muted/30 border border-border/50">
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase mb-1">Insulin-to-Carb Ratio (ICR)</p>
+                  <p className="text-[10px] text-muted-foreground mb-1.5">500 ÷ TDI = grams of carb covered by 1 unit</p>
+                  <div className="p-1.5 rounded bg-background/50">
+                    <p className="text-[9px] text-muted-foreground">Example: 500 ÷ 50 units = <span className="font-medium text-foreground">1:10 ratio</span></p>
+                  </div>
+                </div>
+
+                {/* Correction Factor */}
+                <div className="p-2.5 rounded-lg bg-muted/30 border border-border/50">
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase mb-1">Correction Factor (ISF)</p>
+                  <p className="text-[10px] text-muted-foreground mb-1.5">1700 ÷ TDI = mg/dL drop per 1 unit</p>
+                  <div className="p-1.5 rounded bg-background/50">
+                    <p className="text-[9px] text-muted-foreground">Example: 1700 ÷ 50 units = <span className="font-medium text-foreground">1 unit drops glucose by 34 mg/dL</span></p>
+                  </div>
+                </div>
+
+                {/* Sliding Scale Reference */}
+                <div className="p-2 rounded-lg bg-amber-500/5 border border-amber-500/20">
+                  <p className="text-[10px] font-medium text-amber-500 uppercase mb-1.5">Typical Sliding Scale (Humalog/Novolog)</p>
+                  <div className="grid grid-cols-2 gap-1 text-[9px]">
+                    <div className="flex justify-between p-1 rounded bg-background/50">
+                      <span className="text-muted-foreground">150-199 mg/dL</span>
+                      <span className="font-medium text-foreground">+2 units</span>
+                    </div>
+                    <div className="flex justify-between p-1 rounded bg-background/50">
+                      <span className="text-muted-foreground">200-249 mg/dL</span>
+                      <span className="font-medium text-foreground">+4 units</span>
+                    </div>
+                    <div className="flex justify-between p-1 rounded bg-background/50">
+                      <span className="text-muted-foreground">250-299 mg/dL</span>
+                      <span className="font-medium text-foreground">+6 units</span>
+                    </div>
+                    <div className="flex justify-between p-1 rounded bg-background/50">
+                      <span className="text-muted-foreground">300-350 mg/dL</span>
+                      <span className="font-medium text-foreground">+8 units</span>
+                    </div>
+                    <div className="flex justify-between p-1 rounded bg-background/50 col-span-2">
+                      <span className="text-muted-foreground">&gt;350 mg/dL</span>
+                      <span className="font-medium text-foreground">+10 units + check ketones</span>
+                    </div>
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+
             <div className="flex gap-2 pt-1">
               <Button onClick={generateDiabetesRx} className="flex-1 text-xs h-9" style={{ background: `linear-gradient(135deg, ${categoryColors.diabetes.bg}, rgba(248,113,113,0.08))`, borderColor: categoryColors.diabetes.border }} variant="outline">
                 Generate Rx <ChevronRight className="h-3.5 w-3.5 ml-1" />
