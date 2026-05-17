@@ -318,9 +318,31 @@ function OCRUpload({ onValuesExtracted }: OCRUploadProps) {
 }
 
 export default function Home() {
+  // Unified patient conditions - shared across all modules
+  const [patientConditions, setPatientConditions] = useState({
+    dm: false,        // Diabetes - shared
+    htn: false,       // Hypertension - shared
+    ckd: false,       // Chronic Kidney Disease - shared
+    hf: false,        // Heart Failure - shared
+    cvd: false,       // CVD - Diabetes only
+    obesity: false,   // Obesity - Diabetes only
+    cad: false,       // CAD - HTN only
+    stroke: false,    // Stroke - HTN only
+    smoker: false,    // Smoker - Lipid only
+    fhx: false,       // Family History - Lipid only
+    ascvd: false,     // ASCVD - Lipid only
+    dyslipidemia: false, // Dyslipidemia - Obesity only
+    osa: false,       // OSA - Obesity only
+    nafld: false,     // NAFLD - Obesity only
+  });
+
+  // Helper to toggle patient condition (shared across all modules)
+  const toggleCondition = (key: keyof typeof patientConditions) => {
+    setPatientConditions(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
   // Diabetes state
   const [dmInputs, setDmInputs] = useState({ fg: "", a1c: "", pp: "", egfr: "", weight: "", creatinine: "", age: "" });
-  const [dmChecks, setDmChecks] = useState({ cvd: false, hf: false, ckd: false, obesity: false });
   const [dmRx, setDmRx] = useState<PrescriptionState>({ visible: false, content: null });
   const [dmSex, setDmSex] = useState<"male" | "female">("male");
 
@@ -335,17 +357,14 @@ export default function Home() {
   // HTN state
   const [htnInputs, setHtnInputs] = useState({ sbp: "", dbp: "", age: "" });
   const [htnTarget, setHtnTarget] = useState("intensive");
-  const [htnChecks, setHtnChecks] = useState({ dm: false, ckd: false, cad: false, stroke: false, hf: false });
   const [htnRx, setHtnRx] = useState<PrescriptionState>({ visible: false, content: null });
 
   // Lipid state
   const [lipInputs, setLipInputs] = useState({ ldl: "", hdl: "", tg: "", age: "" });
-  const [lipChecks, setLipChecks] = useState({ dm: false, smoker: false, htn: false, fhx: false, ascvd: false });
   const [lipRx, setLipRx] = useState<PrescriptionState>({ visible: false, content: null });
 
   // Obesity state
   const [obeInputs, setObeInputs] = useState({ bmi: "", waist: "", weight: "", height: "" });
-  const [obeChecks, setObeChecks] = useState({ dm: false, htn: false, dyslipidemia: false, osa: false, nafld: false });
   const [obeRx, setObeRx] = useState<PrescriptionState>({ visible: false, content: null });
   const [obeUnits, setObeUnits] = useState<{ weight: "kg" | "lb", height: "cm" | "ft" }>({ weight: "kg", height: "cm" });
 
@@ -366,7 +385,7 @@ export default function Home() {
     const fg = parseFloat(dmInputs.fg) || 0;
     const a1c = parseFloat(dmInputs.a1c) || 0;
     const egfr = parseFloat(dmInputs.egfr) || 90;
-    const { cvd, hf, ckd, obesity } = dmChecks;
+    const { cvd, hf, ckd, obesity } = patientConditions;
 
     if (!fg && !a1c) {
       setDmRx({ visible: true, content: <p className="text-sm text-muted-foreground">Enter at least fasting glucose or HbA1c to generate a prescription.</p>, severity: "low" });
@@ -441,7 +460,7 @@ export default function Home() {
   const generateHtnRx = () => {
     const sbp = parseFloat(htnInputs.sbp) || 0;
     const dbp = parseFloat(htnInputs.dbp) || 0;
-    const { dm, ckd, cad, stroke, hf } = htnChecks;
+    const { dm, ckd, cad, stroke, hf } = patientConditions;
 
     if (!sbp) {
       setHtnRx({ visible: true, content: <p className="text-sm text-muted-foreground">Enter SBP to generate a prescription.</p>, severity: "low" });
@@ -527,7 +546,7 @@ export default function Home() {
     const hdl = parseFloat(lipInputs.hdl) || 0;
     const tg = parseFloat(lipInputs.tg) || 0;
     const age = parseFloat(lipInputs.age) || 0;
-    const { dm, smoker, htn, fhx, ascvd } = lipChecks;
+    const { dm, smoker, htn, fhx, ascvd } = patientConditions;
 
     if (!ldl) {
       setLipRx({ visible: true, content: <p className="text-sm text-muted-foreground">Enter LDL-C to generate a prescription.</p>, severity: "low" });
@@ -610,7 +629,7 @@ export default function Home() {
   const generateObesityRx = () => {
     const bmi = parseFloat(obeInputs.bmi) || 0;
     const waist = parseFloat(obeInputs.waist) || 0;
-    const { dm, htn, dyslipidemia, osa, nafld } = obeChecks;
+    const { dm, htn, dyslipidemia, osa, nafld } = patientConditions;
 
     if (!bmi) {
       setObeRx({ visible: true, content: <p className="text-sm text-muted-foreground">Enter BMI to generate a prescription.</p>, severity: "low" });
@@ -784,6 +803,91 @@ export default function Home() {
         if (values.tg) setLipInputs(prev => ({ ...prev, tg: values.tg }));
       }} />
 
+      {/* Patient Conditions Summary */}
+      <div className="max-w-6xl mx-auto px-6 pb-8">
+        <Card className="border-border/60">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Patient Conditions & Risk Factors</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Diabetes - Associated Conditions */}
+            <div className="space-y-2">
+              <Label className="text-xs font-medium" style={{ color: categoryColors.diabetes.accent }}>Diabetes Complications</Label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { key: "cvd", label: "CVD" },
+                  { key: "hf", label: "Heart Failure" },
+                  { key: "ckd", label: "CKD" },
+                  { key: "obesity", label: "Obesity" },
+                ].map(({ key, label }) => (
+                  <label key={`dm-${key}`} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
+                    <Checkbox checked={patientConditions[key as keyof typeof patientConditions]} onCheckedChange={() => toggleCondition(key as keyof typeof patientConditions)} className="h-3.5 w-3.5" />
+                    <span className="text-xs">{label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Hypertension - Associated Conditions */}
+            <div className="space-y-2">
+              <Label className="text-xs font-medium" style={{ color: categoryColors.hypertension.accent }}>Hypertension Comorbidities</Label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { key: "dm", label: "Diabetes" },
+                  { key: "ckd", label: "CKD" },
+                  { key: "cad", label: "CAD" },
+                  { key: "stroke", label: "Prior Stroke" },
+                  { key: "hf", label: "Heart Failure" },
+                ].map(({ key, label }) => (
+                  <label key={`htn-${key}`} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
+                    <Checkbox checked={patientConditions[key as keyof typeof patientConditions]} onCheckedChange={() => toggleCondition(key as keyof typeof patientConditions)} className="h-3.5 w-3.5" />
+                    <span className="text-xs">{label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Lipid - Risk Factors */}
+            <div className="space-y-2">
+              <Label className="text-xs font-medium" style={{ color: categoryColors.lipid.accent }}>ASCVD Risk Factors</Label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { key: "dm", label: "Diabetes" },
+                  { key: "smoker", label: "Smoker" },
+                  { key: "htn", label: "HTN" },
+                  { key: "fhx", label: "Family History" },
+                  { key: "ascvd", label: "ASCVD" },
+                ].map(({ key, label }) => (
+                  <label key={`lip-${key}`} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
+                    <Checkbox checked={patientConditions[key as keyof typeof patientConditions]} onCheckedChange={() => toggleCondition(key as keyof typeof patientConditions)} className="h-3.5 w-3.5" />
+                    <span className="text-xs">{label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Obesity - Metabolic Complications */}
+            <div className="space-y-2">
+              <Label className="text-xs font-medium" style={{ color: categoryColors.obesity.accent }}>Metabolic Complications</Label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { key: "dm", label: "Type 2 DM" },
+                  { key: "htn", label: "HTN" },
+                  { key: "dyslipidemia", label: "Dyslipidemia" },
+                  { key: "osa", label: "OSA" },
+                  { key: "nafld", label: "NAFLD" },
+                ].map(({ key, label }) => (
+                  <label key={`obe-${key}`} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
+                    <Checkbox checked={patientConditions[key as keyof typeof patientConditions]} onCheckedChange={() => toggleCondition(key as keyof typeof patientConditions)} className="h-3.5 w-3.5" />
+                    <span className="text-xs">{label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Grid */}
       <div className="max-w-6xl mx-auto px-6 pb-16 grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Diabetes Card */}
@@ -799,24 +903,6 @@ export default function Home() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Associated Conditions */}
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-muted-foreground">Associated Conditions</Label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { key: "cvd", label: "CVD" },
-                  { key: "hf", label: "Heart Failure" },
-                  { key: "ckd", label: "CKD" },
-                  { key: "obesity", label: "Obesity" },
-                ].map(({ key, label }) => (
-                  <label key={key} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
-                    <Checkbox checked={dmChecks[key as keyof typeof dmChecks]} onCheckedChange={checked => setDmChecks({ ...dmChecks, [key]: checked as boolean })} className="h-3.5 w-3.5" />
-                    <span className="text-xs">{label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
             {/* Essential Labs */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
@@ -903,7 +989,7 @@ export default function Home() {
               <Button onClick={generateDiabetesRx} className="flex-1 text-xs h-9" style={{ background: `linear-gradient(135deg, ${categoryColors.diabetes.bg}, rgba(248,113,113,0.08))`, borderColor: categoryColors.diabetes.border }} variant="outline">
                 Generate Rx <ChevronRight className="h-3.5 w-3.5 ml-1" />
               </Button>
-              <Button variant="outline" onClick={() => { setDmInputs({ fg: "", a1c: "", pp: "", egfr: "", weight: "", creatinine: "", age: "" }); setDmChecks({ cvd: false, hf: false, ckd: false, obesity: false }); setDmRx({ visible: false, content: null }); }} className="text-xs h-9">Clear</Button>
+              <Button variant="outline" onClick={() => { setDmInputs({ fg: "", a1c: "", pp: "", egfr: "", weight: "", creatinine: "", age: "" }); setPatientConditions(prev => ({ ...prev, cvd: false, hf: false, ckd: false, obesity: false })); setDmRx({ visible: false, content: null }); }} className="text-xs h-9">Clear</Button>
             </div>
             {dmRx.visible && (
               <div className="mt-4 p-4 bg-muted/30 rounded-lg border border-border/50 animate-in fade-in slide-in-from-top-2">
@@ -926,25 +1012,6 @@ export default function Home() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Associated Conditions */}
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-muted-foreground">Associated Conditions</Label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { key: "dm", label: "Diabetes" },
-                  { key: "ckd", label: "CKD" },
-                  { key: "cad", label: "CAD" },
-                  { key: "stroke", label: "Prior Stroke" },
-                  { key: "hf", label: "Heart Failure" },
-                ].map(({ key, label }) => (
-                  <label key={key} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
-                    <Checkbox checked={htnChecks[key as keyof typeof htnChecks]} onCheckedChange={checked => setHtnChecks({ ...htnChecks, [key]: checked as boolean })} className="h-3.5 w-3.5" />
-                    <span className="text-xs">{label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
             {/* Essential Vitals */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
@@ -992,7 +1059,7 @@ export default function Home() {
               <Button onClick={generateHtnRx} className="flex-1 text-xs h-9" style={{ background: `linear-gradient(135deg, ${categoryColors.hypertension.bg}, rgba(251,146,60,0.08))`, borderColor: categoryColors.hypertension.border }} variant="outline">
                 Generate Rx <ChevronRight className="h-3.5 w-3.5 ml-1" />
               </Button>
-              <Button variant="outline" onClick={() => { setHtnInputs({ sbp: "", dbp: "", age: "" }); setHtnChecks({ dm: false, ckd: false, cad: false, stroke: false, hf: false }); setHtnRx({ visible: false, content: null }); }} className="text-xs h-9">Clear</Button>
+              <Button variant="outline" onClick={() => { setHtnInputs({ sbp: "", dbp: "", age: "" }); setPatientConditions(prev => ({ ...prev, dm: false, ckd: false, cad: false, stroke: false, hf: false })); setHtnRx({ visible: false, content: null }); }} className="text-xs h-9">Clear</Button>
             </div>
             {htnRx.visible && (
               <div className="mt-4 p-4 bg-muted/30 rounded-lg border border-border/50 animate-in fade-in slide-in-from-top-2">
@@ -1015,25 +1082,6 @@ export default function Home() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Risk Factors */}
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-muted-foreground">Risk Factors</Label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { key: "dm", label: "Diabetes" },
-                  { key: "smoker", label: "Smoker" },
-                  { key: "htn", label: "HTN" },
-                  { key: "fhx", label: "Family History" },
-                  { key: "ascvd", label: "ASCVD" },
-                ].map(({ key, label }) => (
-                  <label key={key} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
-                    <Checkbox checked={lipChecks[key as keyof typeof lipChecks]} onCheckedChange={checked => setLipChecks({ ...lipChecks, [key]: checked as boolean })} className="h-3.5 w-3.5" />
-                    <span className="text-xs">{label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
             {/* Essential Labs */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
@@ -1072,7 +1120,7 @@ export default function Home() {
               <Button onClick={generateLipidRx} className="flex-1 text-xs h-9" style={{ background: `linear-gradient(135deg, ${categoryColors.lipid.bg}, rgba(96,165,250,0.08))`, borderColor: categoryColors.lipid.border }} variant="outline">
                 Generate Rx <ChevronRight className="h-3.5 w-3.5 ml-1" />
               </Button>
-              <Button variant="outline" onClick={() => { setLipInputs({ ldl: "", hdl: "", tg: "", age: "" }); setLipChecks({ dm: false, smoker: false, htn: false, fhx: false, ascvd: false }); setLipRx({ visible: false, content: null }); }} className="text-xs h-9">Clear</Button>
+              <Button variant="outline" onClick={() => { setLipInputs({ ldl: "", hdl: "", tg: "", age: "" }); setPatientConditions(prev => ({ ...prev, dm: false, smoker: false, htn: false, fhx: false, ascvd: false })); setLipRx({ visible: false, content: null }); }} className="text-xs h-9">Clear</Button>
             </div>
             {lipRx.visible && (
               <div className="mt-4 p-4 bg-muted/30 rounded-lg border border-border/50 animate-in fade-in slide-in-from-top-2">
@@ -1095,25 +1143,6 @@ export default function Home() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Metabolic Complications */}
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-muted-foreground">Metabolic Complications</Label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { key: "dm", label: "Type 2 DM" },
-                  { key: "htn", label: "HTN" },
-                  { key: "dyslipidemia", label: "Dyslipidemia" },
-                  { key: "osa", label: "OSA" },
-                  { key: "nafld", label: "NAFLD" },
-                ].map(({ key, label }) => (
-                  <label key={key} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
-                    <Checkbox checked={obeChecks[key as keyof typeof obeChecks]} onCheckedChange={checked => setObeChecks({ ...obeChecks, [key]: checked as boolean })} className="h-3.5 w-3.5" />
-                    <span className="text-xs">{label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
             <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
               <p className="text-xs font-medium text-muted-foreground uppercase mb-2">BMI Calculator</p>
               <div className="grid grid-cols-2 gap-3 mb-2">
@@ -1185,7 +1214,7 @@ export default function Home() {
               <Button onClick={generateObesityRx} className="flex-1 text-xs h-9" style={{ background: `linear-gradient(135deg, ${categoryColors.obesity.bg}, rgba(167,139,250,0.08))`, borderColor: categoryColors.obesity.border }} variant="outline">
                 Generate Rx <ChevronRight className="h-3.5 w-3.5 ml-1" />
               </Button>
-              <Button variant="outline" onClick={() => { setObeInputs({ bmi: "", waist: "", weight: "", height: "" }); setObeChecks({ dm: false, htn: false, dyslipidemia: false, osa: false, nafld: false }); setObeRx({ visible: false, content: null }); setObeUnits({ weight: "kg", height: "cm" }); }} className="text-xs h-9">Clear</Button>
+              <Button variant="outline" onClick={() => { setObeInputs({ bmi: "", waist: "", weight: "", height: "" }); setPatientConditions(prev => ({ ...prev, dm: false, htn: false, dyslipidemia: false, osa: false, nafld: false })); setObeRx({ visible: false, content: null }); setObeUnits({ weight: "kg", height: "cm" }); }} className="text-xs h-9">Clear</Button>
             </div>
             {obeRx.visible && (
               <div className="mt-4 p-4 bg-muted/30 rounded-lg border border-border/50 animate-in fade-in slide-in-from-top-2">
