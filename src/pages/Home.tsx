@@ -806,8 +806,34 @@ export default function Home() {
       {/* Patient Conditions Summary */}
       <div className="max-w-6xl mx-auto px-6 pb-8">
         <Card className="border-border/60">
-          <CardHeader className="pb-3">
+          <CardHeader className="pb-3 flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-medium text-muted-foreground">Patient Conditions & Risk Factors</CardTitle>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                // Clear all inputs
+                setDmInputs({ fg: "", a1c: "", pp: "", egfr: "", weight: "", creatinine: "", age: "" });
+                setHtnInputs({ sbp: "", dbp: "", age: "" });
+                setLipInputs({ ldl: "", hdl: "", tg: "", age: "" });
+                setObeInputs({ bmi: "", waist: "", weight: "", height: "" });
+                // Clear all conditions
+                setPatientConditions({
+                  dm: false, htn: false, ckd: false, hf: false, cvd: false, obesity: false,
+                  cad: false, stroke: false, smoker: false, fhx: false, ascvd: false,
+                  dyslipidemia: false, osa: false, nafld: false,
+                });
+                // Clear all prescriptions
+                setDmRx({ visible: false, content: null });
+                setHtnRx({ visible: false, content: null });
+                setLipRx({ visible: false, content: null });
+                setObeRx({ visible: false, content: null });
+                setCompRx({ visible: false, content: null });
+              }}
+              className="text-xs h-7 px-2 text-muted-foreground hover:text-foreground"
+            >
+              Clear All
+            </Button>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Diabetes - Associated Conditions */}
