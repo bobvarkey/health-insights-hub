@@ -899,26 +899,6 @@ export default function Home() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Comorbidities - moved to top */}
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-400" />Associated Conditions
-              </Label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { key: "cvd", label: "CVD" },
-                  { key: "hf", label: "Heart Failure" },
-                  { key: "ckd", label: "CKD" },
-                  { key: "obesity", label: "Obesity" },
-                ].map(({ key, label }) => (
-                  <label key={key} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
-                    <Checkbox checked={dmChecks[key as keyof typeof dmChecks]} onCheckedChange={checked => setDmChecks({ ...dmChecks, [key]: checked as boolean })} className="h-3.5 w-3.5" />
-                    <span className="text-xs">{label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
             {/* Essential Labs */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
@@ -1028,27 +1008,6 @@ export default function Home() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Associated Conditions - moved to top */}
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />Associated Conditions
-              </Label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { key: "dm", label: "Diabetes", abbr: "DM" },
-                  { key: "ckd", label: "CKD", abbr: "CKD" },
-                  { key: "cad", label: "CAD", abbr: "CAD" },
-                  { key: "stroke", label: "Prior Stroke" },
-                  { key: "hf", label: "Heart Failure", abbr: "HF" },
-                ].map(({ key, label, abbr }) => (
-                  <label key={key} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
-                    <Checkbox checked={htnChecks[key as keyof typeof htnChecks]} onCheckedChange={checked => setHtnChecks({ ...htnChecks, [key]: checked as boolean })} className="h-3.5 w-3.5" />
-                    {abbr ? <AbbreviationLabel abbr={abbr} /> : <span className="text-xs">{label}</span>}
-                  </label>
-                ))}
-              </div>
-            </div>
-
             {/* Essential Vitals */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
@@ -1119,27 +1078,6 @@ export default function Home() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Risk Factors - moved to top */}
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />Risk Factors
-              </Label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { key: "dm", label: "Diabetes", abbr: "DM" },
-                  { key: "smoker", label: "Smoker" },
-                  { key: "htn", label: "HTN", abbr: "HTN" },
-                  { key: "fhx", label: "Family History", abbr: "FHx" },
-                  { key: "ascvd", label: "ASCVD", abbr: "ASCVD" },
-                ].map(({ key, label, abbr }) => (
-                  <label key={key} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
-                    <Checkbox checked={lipChecks[key as keyof typeof lipChecks]} onCheckedChange={checked => setLipChecks({ ...lipChecks, [key]: checked as boolean })} className="h-3.5 w-3.5" />
-                    {abbr ? <AbbreviationLabel abbr={abbr} /> : <span className="text-xs">{label}</span>}
-                  </label>
-                ))}
-              </div>
-            </div>
-
             {/* Essential Labs */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
@@ -1268,22 +1206,6 @@ export default function Home() {
               <Label className="text-xs font-medium text-muted-foreground">Waist Circumference <span className="text-muted-foreground/60">cm</span></Label>
               <Input type="number" placeholder="e.g. 102" value={obeInputs.waist} onChange={e => setObeInputs({ ...obeInputs, waist: e.target.value })} className="h-9" />
             </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-muted-foreground">Metabolic Complications</Label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { key: "dm", label: "Type 2 DM", abbr: "DM" },
-                  { key: "htn", label: "HTN", abbr: "HTN" },
-                  { key: "dyslipidemia", label: "Dyslipidemia" },
-                  { key: "osa", label: "OSA", abbr: "OSA" },
-                  { key: "nafld", label: "NAFLD/MASLD", abbr: "NAFLD" },
-                ].map(({ key, label, abbr }) => (
-                  <label key={key} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
-                    <Checkbox checked={obeChecks[key as keyof typeof obeChecks]} onCheckedChange={checked => setObeChecks({ ...obeChecks, [key]: checked as boolean })} className="h-3.5 w-3.5" />
-                    {abbr ? <AbbreviationLabel abbr={abbr} /> : <span className="text-xs">{label}</span>}
-                  </label>
-                ))}
-              </div>
             </div>
             <div className="flex gap-2 pt-1">
               <Button onClick={generateObesityRx} className="flex-1 text-xs h-9" style={{ background: `linear-gradient(135deg, ${categoryColors.obesity.bg}, rgba(167,139,250,0.08))`, borderColor: categoryColors.obesity.border }} variant="outline">
