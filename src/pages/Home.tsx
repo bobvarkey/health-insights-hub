@@ -786,28 +786,6 @@ export default function Home() {
 
       {/* Grid */}
       <div className="max-w-6xl mx-auto px-6 pb-16 grid grid-cols-1 md:grid-cols-2 gap-5">
-              </Label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { key: "dm", label: "Type 2 DM" },
-                  { key: "htn", label: "HTN" },
-                  { key: "dyslipidemia", label: "Dyslipidemia" },
-                  { key: "osa", label: "OSA" },
-                  { key: "nafld", label: "NAFLD" },
-                ].map(({ key, label }) => (
-                  <label key={`obe-${key}`} className="flex items-center gap-1.5 px-2 py-1 bg-muted/40 rounded border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
-                    <Checkbox checked={obeChecks[key as keyof typeof obeChecks]} onCheckedChange={checked => setObeChecks({ ...obeChecks, [key]: checked as boolean })} className="h-3 w-3" />
-                    <span className="text-[10px]">{label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Grid */}
-      <div className="max-w-6xl mx-auto px-6 pb-16 grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Diabetes Card */}
         <Card className="relative overflow-hidden border-border/60 hover:border-border transition-colors group">
           <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-red-500 to-red-500/30 opacity-60" />
@@ -1202,7 +1180,6 @@ export default function Home() {
             <div className="space-y-1.5">
               <Label className="text-xs font-medium text-muted-foreground">Waist Circumference <span className="text-muted-foreground/60">cm</span></Label>
               <Input type="number" placeholder="e.g. 102" value={obeInputs.waist} onChange={e => setObeInputs({ ...obeInputs, waist: e.target.value })} className="h-9" />
-            </div>
             </div>
             <div className="flex gap-2 pt-1">
               <Button onClick={generateObesityRx} className="flex-1 text-xs h-9" style={{ background: `linear-gradient(135deg, ${categoryColors.obesity.bg}, rgba(167,139,250,0.08))`, borderColor: categoryColors.obesity.border }} variant="outline">
