@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Activity, Droplets, Heart, Scale } from "lucide-react";
+import { Activity, Droplets, Heart, Scale, GitBranch, Pill, Table2, Syringe } from "lucide-react";
 
 const categories = [
   {
@@ -11,6 +11,7 @@ const categories = [
       { name: "Sliding Scale Insulin", path: "/sliding-scale" },
       { name: "Hypoglycemia Risk", path: "/hypo-risk" },
       { name: "Renal Dose Adjustment", path: "/renal-dosing" },
+      { name: "Medication Algorithm", path: "/diabetes/medication-algorithm", isNew: true },
     ],
   },
   {
@@ -29,6 +30,8 @@ const categories = [
     calculators: [
       { name: "GFR Calculator", path: "/gfr-calculator" },
       { name: "Drug Interactions", path: "/drug-interactions" },
+      { name: "Treatment Algorithm", path: "/htn/treatment-algorithm", isNew: true },
+      { name: "Potency Table", path: "/htn/potency-table", isNew: true },
     ],
   },
   {
@@ -38,6 +41,7 @@ const categories = [
     calculators: [
       { name: "BMI Calculator", path: "/obesity/bmi-calculator" },
       { name: "Waist-to-Height Ratio", path: "/obesity/waist-height-ratio" },
+      { name: "GLP-1 Algorithm", path: "/obesity/glp1-algorithm", isNew: true },
     ],
   },
 ];
@@ -63,13 +67,18 @@ export default function Home() {
                 <h2 className="text-lg font-semibold">{label}</h2>
               </div>
               <ul className="space-y-1">
-                {calculators.map(({ name, path }) => (
+                {calculators.map(({ name, path, isNew }) => (
                   <li key={path}>
                     <Link
                       to={path}
-                      className="block rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                      className="flex items-center justify-between rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                     >
-                      {name}
+                      <span>{name}</span>
+                      {isNew && (
+                        <span className="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded-full">
+                          NEW
+                        </span>
+                      )}
                     </Link>
                   </li>
                 ))}
