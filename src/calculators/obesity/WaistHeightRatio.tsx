@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Ruler, Calculator, Info, ChevronDown, ChevronUp } from "lucide-react";
+import { Ruler, Calculator, Info, ChevronDown, ChevronUp, Home, RotateCcw, Target, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,7 @@ import {
   getWaistThreshold,
   WhtrCategory,
 } from "./obesity-guidelines";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const whtrSchema = z.object({
   waist: z.coerce.number().min(50).max(200).describe("Waist circumference in cm"),
@@ -38,7 +40,16 @@ interface WhtrResult {
   isCentralObese: boolean;
 }
 
+type TabKey = "calculator" | "guidelines";
+
+const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
+  { key: "calculator", label: "Calculator", icon: <Target className="h-4 w-4" /> },
+  { key: "guidelines", label: "Guidelines", icon: <BookOpen className="h-4 w-4" /> },
+];
+
 export default function WaistHeightRatio() {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<TabKey>("calculator");
   const [result, setResult] = useState<WhtrResult | null>(null);
   const [showGuidance, setShowGuidance] = useState(false);
 
@@ -46,6 +57,7 @@ export default function WaistHeightRatio() {
     register,
     handleSubmit,
     watch,
+    reset: formReset,
     formState: { errors },
   } = useForm<WhtrFormData>({
     resolver: zodResolver(whtrSchema),
@@ -78,22 +90,56 @@ export default function WaistHeightRatio() {
   const reset = () => {
     setResult(null);
     setShowGuidance(false);
+    formReset();
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card/50 px-6 py-5">
-        <div className="flex items-center gap-2">
-          <Ruler className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold tracking-tight">Waist-to-Height Ratio</h1>
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <div className="mx-auto max-w-2xl px-4">
+          <div className="flex items-center gap-3 py-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 shadow-md">
+              <Ruler className="h-5 w-5 text-white" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h1 className="font-display text-xl font-extrabold tracking-tight bg-gradient-to-r from-pink-500 via-rose-500 to-orange-500 bg-clip-text text-transparent truncate">
+                Waist-to-Height Ratio
+              </h1>
+              <p className="text-xs font-medium text-rose-500 dark:text-rose-400 truncate">
+                Central Obesity Assessment
+              </p>
+            </div>
+            <div className="flex items-center gap-2 no-print shrink-0">
+              <Button variant="ghost" size="sm" onClick={() => navigate("/")} title="Back to Home">
+                <Home className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={reset} title="Reset Form">
+                <RotateCcw className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          <div className="flex gap-0.5 pb-2 overflow-x-auto no-print">
+            {TABS.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
+                  activeTab === tab.key
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Central obesity assessment with ethnicity-specific thresholds
-        </p>
-      </header>
+      </div>
 
-      <main className="mx-auto max-w-2xl px-6 py-8">
+      <main className="mx-auto max-w-2xl px-4 py-5">
+        {activeTab === "calculator" && (
         <Card className="clinical-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -293,6 +339,60 @@ export default function WaistHeightRatio() {
             )}
           </CardContent>
         </Card>
+        )}
+
+        {activeTab === "guidelines" && (
+          <div className="space-y-4">
+            <Card className="clinical-card border-primary/20">
+              <CardHeader>
+                <CardTitle className="text-lg">WHtR Interpretation</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                    <span className="text-sm">&lt; 0.40</span>
+                    <span className="text-sm font-medium text-yellow-500">Underweight</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                    <span className="text-sm">0.40 - 0.49</span>
+                    <span className="text-sm font-medium text-emerald-500">Healthy</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                    <span className="text-sm">0.50 - 0.59</span>
+                    <span className="text-sm font-medium text-amber-500">Increased Risk</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                    <span className="text-sm">≥ 0.60</span>
+                    <span className="text-sm font-medium text-red-500">High Risk</span>
+                  </div>
+                </div>              </CardContent>
+            </Card>
+
+            <Card className="clinical-card border-primary/20">
+              <CardHeader>
+                <CardTitle className="text-lg">Waist Circumference Thresholds</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm font-medium mb-2">Standard (Europid/African/American)</p>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="p-2 rounded bg-muted/30">Men: ≥94 cm (⬆️ risk), ≥102 cm (high risk)</div>
+                      <div className="p-2 rounded bg-muted/30">Women: ≥80 cm (⬆️ risk), ≥88 cm (high risk)</div>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium mb-2">South/East Asian</p>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="p-2 rounded bg-muted/30">Men: ≥90 cm (high risk)</div>
+                      <div className="p-2 rounded bg-muted/30">Women: ≥80 cm (high risk)</div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </main>
     </div>
   );

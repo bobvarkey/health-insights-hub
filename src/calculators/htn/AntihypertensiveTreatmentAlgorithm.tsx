@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { GitBranch, ChevronRight, RotateCcw, Activity, Heart, Brain, Baby, AlertTriangle } from "lucide-react";
+import { GitBranch, ChevronRight, RotateCcw, Activity, Heart, Brain, Baby, AlertTriangle, Home } from "lucide-react";
 
 interface AlgorithmNode {
   id: string;
@@ -199,6 +200,7 @@ const algorithmNodes: AlgorithmNode[] = [
 ];
 
 export default function AntihypertensiveTreatmentAlgorithm() {
+  const navigate = useNavigate();
   const [history, setHistory] = useState<string[]>(["start"]);
 
   const currentId = history[history.length - 1];
@@ -230,18 +232,34 @@ export default function AntihypertensiveTreatmentAlgorithm() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card/50 px-6 py-5">
-        <div className="flex items-center gap-2">
-          <GitBranch className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold tracking-tight">HTN Treatment Algorithm</h1>
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <div className="mx-auto max-w-3xl px-4">
+          <div className="flex items-center gap-3 py-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-md">
+              <GitBranch className="h-5 w-5 text-white" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h1 className="font-display text-xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-600 bg-clip-text text-transparent truncate">
+                HTN Treatment Algorithm
+              </h1>
+              <p className="text-xs font-medium text-emerald-500 dark:text-emerald-400 truncate">
+                Evidence-Based Antihypertensive Selection
+              </p>
+            </div>
+            <div className="flex items-center gap-2 no-print shrink-0">
+              <Button variant="ghost" size="sm" onClick={() => navigate("/")} title="Back to Home">
+                <Home className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={restart} title="Restart">
+                <RotateCcw className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </div>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Evidence-based antihypertensive selection by comorbidity
-        </p>
-      </header>
+      </div>
 
-      <main className="mx-auto max-w-3xl px-6 py-8">
+      <main className="mx-auto max-w-3xl px-4 py-5">
         <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">

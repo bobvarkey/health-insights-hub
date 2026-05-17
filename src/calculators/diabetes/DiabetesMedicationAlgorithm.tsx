@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,8 @@ import {
   Stethoscope,
   Pill,
   FlaskConical,
+  Home,
+  RotateCcw,
 } from "lucide-react";
 
 interface AlgorithmStep {
@@ -205,6 +208,7 @@ const drugClasses = [
 ];
 
 export default function DiabetesMedicationAlgorithm() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("algorithm");
 
   const getToneClasses = (tone: string) => {
@@ -224,25 +228,52 @@ export default function DiabetesMedicationAlgorithm() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card/50 px-6 py-5">
-        <div className="flex items-center gap-2">
-          <GitBranch className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold tracking-tight">Diabetes Medication Algorithm</h1>
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <div className="mx-auto max-w-5xl px-4">
+          <div className="flex items-center gap-3 py-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-md">
+              <GitBranch className="h-5 w-5 text-white" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h1 className="font-display text-xl font-extrabold tracking-tight bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-600 bg-clip-text text-transparent truncate">
+                Diabetes Medication Algorithm
+              </h1>
+              <p className="text-xs font-medium text-violet-500 dark:text-violet-400 truncate">
+                ADA 2025 Standards of Care
+              </p>
+            </div>
+            <div className="flex items-center gap-2 no-print shrink-0">
+              <Button variant="ghost" size="sm" onClick={() => navigate("/")} title="Back to Home">
+                <Home className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          <div className="flex gap-0.5 pb-2 overflow-x-auto no-print">
+            {[
+              { key: "algorithm", label: "Treatment Algorithm", icon: <Brain className="h-4 w-4" /> },
+              { key: "drug-classes", label: "Drug Classes", icon: <Pill className="h-4 w-4" /> },
+              { key: "guidelines", label: "Clinical Guidelines", icon: <BookOpen className="h-4 w-4" /> },
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
+                  activeTab === tab.key
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
-        <p className="mt-1 text-sm text-muted-foreground">
-          ADA 2025 Standards of Care — Glucose-lowering therapy selection
-        </p>
-      </header>
+      </div>
 
-      <main className="mx-auto max-w-5xl px-6 py-8">
+      <main className="mx-auto max-w-5xl px-4 py-5">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="algorithm">Treatment Algorithm</TabsTrigger>
-            <TabsTrigger value="drug-classes">Drug Classes</TabsTrigger>
-            <TabsTrigger value="guidelines">Clinical Guidelines</TabsTrigger>
-          </TabsList>
-
           {/* Algorithm Tab */}
           <TabsContent value="algorithm" className="space-y-6">
             <Card className="clinical-card border-primary/20">
