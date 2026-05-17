@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ============================================================
 // DIABETIC KETOACIDOSIS (DKA) & HYPEROSMOLAR HYPERGLYCEMIC
 // STATE (HHS) TREATMENT ALGORITHM

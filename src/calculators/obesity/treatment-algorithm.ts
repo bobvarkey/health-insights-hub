@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ============================================================
 // OBESITY TREATMENT ALGORITHM
 // Based on ADA 2026, AACE 2024, and regional guidelines

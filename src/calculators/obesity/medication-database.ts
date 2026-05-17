@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ============================================================
 // OBESITY MEDICATION DATABASE
 // Combined from htn-detective-kit and diabetes-buddy

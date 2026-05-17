@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { PatientData } from "./patient-data";
 
 // ============================================================

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useMemo, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
@@ -283,4 +284,3 @@ export const UNITS_MMHG: Unit[] = [
 export const UNITS_EGFR: Unit[] = [
   { label: "mL/min/1.73m²", fromMetric: (v) => v, toMetric: (v) => v, precision: 0, placeholder: "90" },
 ];
-

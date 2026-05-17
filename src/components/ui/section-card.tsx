@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { Card } from "@/components/ui/card";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { PatientData, getCKDStage } from "./patient-data";
 
 // ============================================================

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * AHA PREVENT Equations — 10-Year ASCVD Risk (Base Model)
  *

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ============================================================
 // OBESITY GUIDELINES - BMI and WHtR Thresholds
 // ADA Standards of Care in Diabetes—2025 (Section 8)

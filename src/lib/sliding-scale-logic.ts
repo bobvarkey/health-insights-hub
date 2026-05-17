@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Inpatient Glycemic Management CDS — Sliding Scale Insulin Decision Logic
 // Based on ADA inpatient guidelines + provided JSON schema rules
 

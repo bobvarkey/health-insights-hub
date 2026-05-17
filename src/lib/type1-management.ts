@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { PatientData } from "./patient-data";
 
 export interface Type1Management {

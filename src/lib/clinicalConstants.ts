@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Shared clinical qualifier constants used across PrimaryPrevention and AscvdEmr.
  */

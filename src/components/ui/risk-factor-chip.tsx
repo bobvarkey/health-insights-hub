@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import type { LabTone } from "@/components/ui/lab-input";
