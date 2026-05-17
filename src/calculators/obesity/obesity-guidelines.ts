@@ -1,6 +1,7 @@
 // ============================================================
 // OBESITY GUIDELINES - BMI and WHtR Thresholds
-// Ethnicity-specific guidelines for South East Asians and Indians
+// ADA Standards of Care in Diabetes—2025 (Section 8)
+// Reference: https://diabetesjournals.org/care/article/49/Supplement_1/S166/163915
 // ============================================================
 
 export type EthnicityType = "standard" | "asian-pacific" | "indian";
@@ -90,6 +91,217 @@ export const WAIST_THRESHOLDS: WaistThreshold[] = [
   { gender: "female", ethnicity: "asian", threshold: 80, label: "Central obesity" },
 ];
 
+// ============================================================
+// ADA 2025 WEIGHT LOSS TARGETS (Recommendation 8.5)
+// ============================================================
+
+export interface WeightLossTarget {
+  percentage: string;
+  grade: "A" | "B" | "C";
+  benefits: string[];
+}
+
+export const WEIGHT_LOSS_TARGETS: WeightLossTarget[] = [
+  {
+    percentage: "3–7%",
+    grade: "A",
+    benefits: [
+      "Improves glycemia, blood pressure, and lipids",
+      "Reduces need for glucose-lowering medications",
+      "Reduces progression from prediabetes to diabetes in at-risk individuals",
+    ],
+  },
+  {
+    percentage: ">10%",
+    grade: "B",
+    benefits: [
+      "Confers greater cardiometabolic benefits",
+      "Possible remission of type 2 diabetes (disease-modifying effects)",
+      "May improve long-term cardiovascular outcomes and mortality",
+      "Improves adipose tissue inflammation and quality of life",
+    ],
+  },
+  {
+    percentage: ">15%",
+    grade: "B",
+    benefits: [
+      "Additional benefits for cardiovascular outcomes",
+      "Improves metabolic dysfunction-associated steatohepatitis (MASH)",
+      "Improves sleep apnea severity",
+      "Enhanced quality of life improvements",
+    ],
+  },
+  {
+    percentage: ">20%",
+    grade: "A",
+    benefits: [
+      "Achieved with metabolic surgery",
+      "Substantial cardiometabolic improvements",
+      "High rates of diabetes remission (83-86% at 5 years)",
+    ],
+  },
+];
+
+// ============================================================
+// ADA 2025 PHARMACOTHERAPY (Recommendation 8.17 - Grade A)
+// ============================================================
+
+export interface PharmacotherapyAgent {
+  name: string;
+  class: string;
+  dosage: string;
+  weightLoss: string;
+  a1cReduction: string;
+  preferred: boolean;
+  notes: string[];
+}
+
+export const PREFERRED_PHARMACOTHERAPY: PharmacotherapyAgent[] = [
+  {
+    name: "Tirzepatide",
+    class: "Dual GIP/GLP-1 receptor agonist",
+    dosage: "5mg, 10mg, or 15mg SC weekly",
+    weightLoss: "14.7% (15mg) to 12.8% (10mg) - SURMOUNT-2",
+    a1cReduction: "1.55-1.57% more than placebo",
+    preferred: true,
+    notes: [
+      "Preferred agent per ADA 2025",
+      "Higher efficacy than GLP-1 RAs alone",
+      "Weight loss typically lower in people with diabetes vs without",
+    ],
+  },
+  {
+    name: "Semaglutide",
+    class: "GLP-1 receptor agonist",
+    dosage: "2.4mg SC weekly (obesity dose)",
+    weightLoss: "~6.2% more than placebo - STEP 2",
+    a1cReduction: "1.2% more than placebo",
+    preferred: true,
+    notes: [
+      "Preferred agent per ADA 2025",
+      "Proven CV benefit (SUSTAIN-6)",
+      "Continue long-term; discontinuation causes regain",
+    ],
+  },
+  {
+    name: "Liraglutide",
+    class: "GLP-1 receptor agonist",
+    dosage: "3.0mg SC daily",
+    weightLoss: "~8% average",
+    a1cReduction: "~1.0-1.5%",
+    preferred: true,
+    notes: [
+      "Preferred agent per ADA 2025",
+      "Daily injection vs weekly for semaglutide",
+      "Proven CV benefit (LEADER)",
+    ],
+  },
+];
+
+export const OTHER_PHARMACOTHERAPY: PharmacotherapyAgent[] = [
+  {
+    name: "Orlistat",
+    class: "Lipase inhibitor",
+    dosage: "120mg TID with meals",
+    weightLoss: "2.9% more than placebo",
+    a1cReduction: "0.3-0.8%",
+    preferred: false,
+    notes: [
+      "Available widely including India",
+      "Take multivitamin at bedtime (fat-soluble vitamin malabsorption)",
+      "GI side effects common",
+    ],
+  },
+  {
+    name: "Phentermine-Topiramate",
+    class: "Sympathomimetic/anticonvulsant",
+    dosage: "7.5/46mg to 15/92mg daily",
+    weightLoss: "7-10%",
+    a1cReduction: "Variable",
+    preferred: false,
+    notes: [
+      "Contraindicated in pregnancy (teratogenic)",
+      "Requires negative pregnancy test before starting",
+    ],
+  },
+  {
+    name: "Naltrexone-Bupropion",
+    class: "Opioid antagonist/NDRI",
+    dosage: "16/180mg BID",
+    weightLoss: "5-8%",
+    a1cReduction: "0.5-1.0%",
+    preferred: false,
+    notes: [
+      "Avoid in uncontrolled hypertension",
+      "Monitor for neuropsychiatric effects",
+    ],
+  },
+];
+
+// ============================================================
+// ADA 2025 METABOLIC SURGERY (Recommendation 8.21 - Grade A)
+// ============================================================
+
+export interface MetabolicSurgeryGuideline {
+  procedure: string;
+  bmiThresholdStandard: number;
+  bmiThresholdAsian: number;
+  weightLoss1yr: string;
+  weightLoss5yr: string;
+  diabetesRemission5yr: string;
+  medianDiseaseFreeYears: number;
+  notes: string[];
+}
+
+export const METABOLIC_SURGERY: MetabolicSurgeryGuideline[] = [
+  {
+    procedure: "Roux-en-Y Gastric Bypass (RYGB)",
+    bmiThresholdStandard: 30,
+    bmiThresholdAsian: 27.5,
+    weightLoss1yr: "~29%",
+    weightLoss5yr: "~24%",
+    diabetesRemission5yr: "86.1%",
+    medianDiseaseFreeYears: 8.3,
+    notes: [
+      "Gold standard procedure",
+      "Reduces microvascular disease incidence",
+      "Decreases all-cause mortality",
+      "Requires lifelong nutritional monitoring",
+    ],
+  },
+  {
+    procedure: "Vertical Sleeve Gastrectomy (VSG)",
+    bmiThresholdStandard: 30,
+    bmiThresholdAsian: 27.5,
+    weightLoss1yr: "~23%",
+    weightLoss5yr: "~16%",
+    diabetesRemission5yr: "83.5%",
+    medianDiseaseFreeYears: 8.3,
+    notes: [
+      "Most common procedure currently",
+      "Preserves anatomy (no intestinal bypass)",
+      "GLP-1 RAs can augment post-surgical weight loss",
+    ],
+  },
+];
+
+// ============================================================
+// ADA 2025 TREATMENT MONITORING
+// ============================================================
+
+export const TREATMENT_MONITORING = {
+  earlyResponse: {
+    timeframe: "3 months",
+    target: ">5% weight loss",
+    interpretation: "Early response predicts long-term success",
+  },
+  longTermTherapy: {
+    continuation: "Continue beyond reaching goals",
+    discontinuationWarning: "Sudden discontinuation results in regain of 50-66% of weight within 1 year",
+    note: "Obesity is a chronic disease requiring long-term management",
+  },
+};
+
 export interface TreatmentGuideline {
   bmiMin: number;
   bmiMax: number;
@@ -98,6 +310,12 @@ export interface TreatmentGuideline {
   medications?: string[];
   surgeryConsideration?: boolean;
 }
+
+// ADA 2025 Source: American Diabetes Association Professional Practice Committee.
+// 8. Obesity and weight management for the prevention and treatment of type 2 diabetes:
+// Standards of Care in Diabetes—2025. Diabetes Care 2025;48(Suppl. 1):S167–S180.
+// URL: https://diabetesjournals.org/care/article/49/Supplement_1/S166/163915
+export const ADA_2025_CITATION = "ADA Standards of Care in Diabetes—2025. Diabetes Care 2025;48(Suppl. 1):S167–S180";
 
 export const TREATMENT_GUIDELINES: TreatmentGuideline[] = [
   {
@@ -124,11 +342,12 @@ export const TREATMENT_GUIDELINES: TreatmentGuideline[] = [
     bmiMax: 29.9,
     ethnicity: "standard",
     recommendations: [
-      "Weight loss goal: 5-10% over 3-6 months",
+      "Weight loss goal: 5-10% over 3-6 months (Grade A)",
       "Caloric deficit: 500-750 kcal/day",
       "Physical activity: 150-300 min/week moderate intensity",
       "Behavioral interventions: self-monitoring, goal setting",
       "Screen for comorbidities (HTN, T2DM, dyslipidemia)",
+      "ADA 2025: Aim for >10% for greater cardiometabolic benefits",
     ],
   },
   {
@@ -160,12 +379,18 @@ export const TREATMENT_GUIDELINES: TreatmentGuideline[] = [
     bmiMax: 34.9,
     ethnicity: "standard",
     recommendations: [
-      "Weight loss goal: 10% over 6 months",
+      "Weight loss goal: >10% over 6 months (Grade B - disease-modifying effects)",
       "Intensive lifestyle intervention",
       "Consider pharmacotherapy if lifestyle alone insufficient",
       "Screen and treat all obesity-related comorbidities",
+      "ADA 2025: Consider metabolic surgery if BMI ≥30.0 kg/m² (Grade A)",
     ],
-    medications: ["Orlistat", "Liraglutide 3.0mg (if available)", "Naltrexone-bupropion (if available)"],
+    medications: [
+      "Tirzepatide (15mg: 14.7% weight loss) - PREFERRED",
+      "Semaglutide 2.4mg weekly - PREFERRED",
+      "Liraglutide 3.0mg daily - PREFERRED",
+      "Orlistat 120mg TID",
+    ],
   },
   {
     bmiMin: 25,
