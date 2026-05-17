@@ -360,7 +360,7 @@ export default function Home() {
   const [htnRx, setHtnRx] = useState<PrescriptionState>({ visible: false, content: null });
 
   // Lipid state
-  const [lipInputs, setLipInputs] = useState({ ldl: "", hdl: "", tg: "", age: "" });
+  const [lipInputs, setLipInputs] = useState({ ldl: "", hdl: "", tg: "", age: "", lpa: "" });
   const [lipRx, setLipRx] = useState<PrescriptionState>({ visible: false, content: null });
 
   // Obesity state
@@ -545,6 +545,7 @@ export default function Home() {
     const ldl = parseFloat(lipInputs.ldl) || 0;
     const hdl = parseFloat(lipInputs.hdl) || 0;
     const tg = parseFloat(lipInputs.tg) || 0;
+    const lpa = parseFloat(lipInputs.lpa) || 0;
     const age = parseFloat(lipInputs.age) || 0;
     const { dm, smoker, htn, fhx, ascvd } = patientConditions;
 
@@ -558,6 +559,11 @@ export default function Home() {
     let intensity = "low";
     let statinChoice = "Consider moderate-intensity statin if risk factors present";
     const addMeds: string[] = [];
+    const laiNotes: string[] = [];
+
+    // LAI 2023 specific thresholds for Indian population
+    const isLaiHighRisk = ldl >= 160 && ldl <= 189;
+    const isLaiExtremeRisk = lpa >= 50 || ldl >= 190;
 
     if (ascvd || (dm && age > 40 && (htn || smoker))) {
       riskCat = "very-high";
@@ -566,7 +572,7 @@ export default function Home() {
       statinChoice = "High-intensity statin: atorvastatin 40–80 mg or rosuvastatin 20–40 mg";
       if (ldl >= 70) addMeds.push("If LDL ≥70 on max statin: add ezetimibe 10 mg");
       if (ldl >= 100) addMeds.push("If LDL ≥100 despite statin + ezetimibe: consider PCSK9i");
-    } else if (dm || (smoker && htn) || (fhx && (smoker || htn))) {
+    } else if (dm || (smoker && htn) || (fhx && (smoker || htn)) || isLaiHighRisk) {
       riskCat = "high";
       ldlTarget = "<70 mg/dL (<1.8 mmol/L)";
       intensity = "high";
@@ -586,6 +592,17 @@ export default function Home() {
       }
     }
 
+    // LAI 2023 specific notes
+    if (lpa >= 50) {
+      laiNotes.push("LAI: Lp(a) ≥50 mg/dL qualifies for Extreme Risk A — consider PCSK9i after statin + ezetimibe");
+    }
+    if (ldl >= 160 && ldl < 190) {
+      laiNotes.push("LAI: LDL 160-189 mg/dL qualifies as high risk in Indian populations");
+    }
+    if (hdl < 40) {
+      laiNotes.push("LAI: Low HDL (<40 mg/dL) common in South Asians — prioritize lifestyle + statin therapy");
+    }
+
     if (tg >= 500) {
       addMeds.push("TG ≥500: Consider fibrate (fenofibrate 145 mg) or high-dose EPA icosapent ethyl (2 g BID)");
     } else if (tg >= 200 && ascvd) {
@@ -599,18 +616,22 @@ export default function Home() {
         <div className="space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-border">
             <span className="text-sm font-semibold uppercase tracking-wider" style={{ color: categoryColors.lipid.accent }}>Lipid Prescription</span>
-            <Badge className={intensity === "high" ? "bg-destructive/20 text-destructive" : intensity === "moderate" ? "bg-warning/20 text-warning" : "bg-success/20 text-success"}>
-              {riskCat === "very-high" ? "Very High Risk" : riskCat.charAt(0).toUpperCase() + riskCat.slice(1)}
-            </Badge>
+            <div className="flex gap-1">
+              <Badge className={intensity === "high" ? "bg-destructive/20 text-destructive" : intensity === "moderate" ? "bg-warning/20 text-warning" : "bg-success/20 text-success"}>
+                {riskCat === "very-high" ? "Very High Risk" : riskCat.charAt(0).toUpperCase() + riskCat.slice(1)}
+              </Badge>
+              <Badge variant="outline" className="text-[10px] border-orange-500/30 text-orange-500">LAI</Badge>
+            </div>
           </div>
           <div className="space-y-3">
             <div className="p-3 rounded-lg bg-muted/30 border-l-2" style={{ borderLeftColor: categoryColors.lipid.accent }}>
-              <p className="text-xs font-medium text-muted-foreground uppercase mb-2">Risk & Targets</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase mb-2">Risk & Targets (ACC/AHA + LAI 2023)</p>
               <ul className="space-y-1 text-sm text-muted-foreground">
                 <li>LDL-C target: {ldlTarget}</li>
                 <li>Current LDL: {ldl} mg/dL</li>
                 {hdl ? <li>HDL: {hdl} mg/dL {hdl < 40 ? "(low)" : ""}</li> : null}
                 {tg ? <li>TG: {tg} mg/dL {tg >= 200 ? "(elevated)" : ""}</li> : null}
+                {lpa ? <li>Lp(a): {lpa} mg/dL {lpa >= 50 ? "(LAI high risk)" : ""}</li> : null}
               </ul>
             </div>
             <div className="p-3 rounded-lg bg-muted/30 border-l-2" style={{ borderLeftColor: categoryColors.lipid.accent }}>
@@ -620,6 +641,14 @@ export default function Home() {
                 {addMeds.map((m, i) => <li key={i} className="text-sm text-foreground">→ {m}</li>)}
               </ul>
             </div>
+            {laiNotes.length > 0 && (
+              <div className="p-3 rounded-lg bg-orange-500/5 border border-orange-500/20">
+                <p className="text-xs font-medium text-orange-500 uppercase mb-2">LAI 2023 Indian Guidelines</p>
+                <ul className="space-y-1">
+                  {laiNotes.map((note, i) => <li key={i} className="text-sm text-foreground">→ {note}</li>)}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       ),
@@ -1104,10 +1133,20 @@ export default function Home() {
                 <Dna className="h-5 w-5" style={{ color: categoryColors.lipid.accent }} />
               </div>
               <CardTitle className="text-base">Lipid Treatment</CardTitle>
-              <Badge variant="outline" className="ml-auto text-xs" style={{ color: categoryColors.lipid.accent, borderColor: categoryColors.lipid.border }}>ACC/AHA</Badge>
+              <div className="ml-auto flex gap-1">
+                <Badge variant="outline" className="text-[10px]" style={{ color: categoryColors.lipid.accent, borderColor: categoryColors.lipid.border }}>ACC/AHA</Badge>
+                <Badge variant="outline" className="text-[10px]" style={{ color: "#f97316", borderColor: "rgba(249,115,22,0.3)" }}>LAI</Badge>
+              </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* LAI Guidelines Notice */}
+            <div className="p-2.5 rounded-lg bg-orange-500/5 border border-orange-500/20">
+              <p className="text-[10px] text-muted-foreground">
+                <span className="font-medium text-orange-500">LAI 2023:</span> Indian-specific cutoffs — LDL ≥160 mg/dL for high risk, Lp(a) ≥50 mg/dL for extreme risk. BMI ≥23 overweight, ≥25 obesity.
+              </p>
+            </div>
+
             {/* Essential Labs */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
@@ -1124,7 +1163,7 @@ export default function Home() {
             <Collapsible className="border border-border/40 rounded-lg overflow-hidden">
               <CollapsibleTrigger asChild>
                 <button className="w-full px-3 py-2 flex items-center justify-between bg-muted/20 hover:bg-muted/30 transition-colors text-xs font-medium text-muted-foreground">
-                  <span>Additional Labs (TG, Age)</span>
+                  <span>Additional Labs (TG, Age, Lp(a))</span>
                   <ChevronDown className="h-3.5 w-3.5" />
                 </button>
               </CollapsibleTrigger>
@@ -1139,14 +1178,22 @@ export default function Home() {
                     <Input type="number" placeholder="e.g. 55" value={lipInputs.age} onChange={e => setLipInputs({ ...lipInputs, age: e.target.value })} className="h-9" />
                   </div>
                 </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-muted-foreground">Lp(a) <span className="text-muted-foreground/60">mg/dL (LAI: ≥50 = Extreme Risk)</span></Label>
+                  <Input type="number" placeholder="e.g. 25" value={lipInputs.lpa || ""} onChange={e => setLipInputs({ ...lipInputs, lpa: e.target.value })} className="h-9" />
+                </div>
               </CollapsibleContent>
             </Collapsible>
 
-            <div className="flex gap-2 pt-1">
-              <Button onClick={generateLipidRx} className="flex-1 text-xs h-9" style={{ background: `linear-gradient(135deg, ${categoryColors.lipid.bg}, rgba(96,165,250,0.08))`, borderColor: categoryColors.lipid.border }} variant="outline">
+            {/* Link to Full Calculator */}
+            <div className="flex items-center justify-between pt-1">
+              <Button onClick={generateLipidRx} className="flex-1 text-xs h-9 mr-2" style={{ background: `linear-gradient(135deg, ${categoryColors.lipid.bg}, rgba(96,165,250,0.08))`, borderColor: categoryColors.lipid.border }} variant="outline">
                 Generate Rx <ChevronRight className="h-3.5 w-3.5 ml-1" />
               </Button>
-              <Button variant="outline" onClick={() => { setLipInputs({ ldl: "", hdl: "", tg: "", age: "" }); setPatientConditions(prev => ({ ...prev, dm: false, smoker: false, htn: false, fhx: false, ascvd: false })); setLipRx({ visible: false, content: null }); }} className="text-xs h-9">Clear</Button>
+              <Button variant="outline" size="sm" onClick={() => navigate("/lipid-panel")} className="text-[10px] h-9 px-2">
+                Full LAI Calc
+              </Button>
+              <Button variant="outline" onClick={() => { setLipInputs({ ldl: "", hdl: "", tg: "", age: "", lpa: "" }); setPatientConditions(prev => ({ ...prev, dm: false, smoker: false, htn: false, fhx: false, ascvd: false })); setLipRx({ visible: false, content: null }); }} className="text-xs h-9 ml-2">Clear</Button>
             </div>
             {lipRx.visible && (
               <div className="mt-4 p-4 bg-muted/30 rounded-lg border border-border/50 animate-in fade-in slide-in-from-top-2">
