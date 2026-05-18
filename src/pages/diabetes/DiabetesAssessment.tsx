@@ -210,11 +210,11 @@ const InsulinDosingCalculator = () => {
             <Switch checked={isInsulinNaive} onCheckedChange={setIsInsulinNaive} />
           </label>
           <label className="flex items-center justify-between p-2.5 rounded-lg border border-border bg-muted/20">
-            <span className="text-sm">CKD (eGFR < 60)</span>
+            <span className="text-sm">CKD (eGFR &lt; 60)</span>
             <Switch checked={hasCkd} onCheckedChange={setHasCkd} />
           </label>
           <label className="flex items-center justify-between p-2.5 rounded-lg border border-border bg-muted/20">
-            <span className="text-sm">Age > 65 years</span>
+            <span className="text-sm">Age {'>'} 65 years</span>
             <Switch checked={isElderly} onCheckedChange={setIsElderly} />
           </label>
         </div>

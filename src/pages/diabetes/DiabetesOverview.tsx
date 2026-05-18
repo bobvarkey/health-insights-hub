@@ -168,7 +168,7 @@ const DiagnosticCriteriaSection = () => {
             </p>
             <ul className="text-xs text-muted-foreground mt-2 space-y-1">
               <li>• Lifestyle intervention reduces T2DM risk by 58% (DPP Study)</li>
-              <li>• Metformin appropriate for high-risk patients (BMI ≥35, age <60, prior GDM)</li>
+              <li>• Metformin appropriate for high-risk patients (BMI ≥35, age &lt;60, prior GDM)</li>
               <li>• Annual screening for progression to diabetes</li>
             </ul>
           </div>

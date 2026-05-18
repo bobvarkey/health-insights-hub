@@ -379,7 +379,7 @@ export default function LipidsTreatment() {
                       <ul className="space-y-1">
                         {intensity.indications.map((ind, idx) => (
                           <li key={idx} className="text-sm flex items-start gap-2">
-                            <span className={`${intensity.color} mt-1"`>•</span>
+                            <span className={`${intensity.color} mt-1`}>•</span>
                             <span>{ind}</span>
                           </li>
                         ))}
