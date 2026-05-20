@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProcedureCard from '../../components/ProcedureCard.astro';
+
+const tools = [
+  {
+    title: 'AVM Evaluation',
+    description: 'Nidus size, eloquence, venous drainage, rupture context, and embolization suitability.',
+    icon: '🎯',
+    href: '/tools/vascular-assessment',
+    tag: 'AVM',
+  },
+  {
+    title: 'DAVF Risk Screen',
+    description: 'Cortical venous reflux, venous ectasia, presentation, and symptom-driven prioritization.',
+    icon: '🧬',
+    href: '/tools/devices',
+    tag: 'Prediction',
+  },
+  {
+    title: 'Carotid Stenosis',
+    description: 'Stenosis severity, symptom status, plaque risk, and device planning context.',
+    icon: '📊',
+    href: '/tools/devices',
+    tag: 'Prediction',
+  },
+];
+---
+
+<BaseLayout title="Vascular Assessment">
+  <section class="bg-white px-4 py-12">
+    <div class="mx-auto max-w-6xl">
+      <p class="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-primary-700">Clinical module</p>
+      <h1 class="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">Vascular Assessment</h1>
+      <p class="mb-8 max-w-3xl text-lg text-gray-700">
+        Classification and prediction support for AVM, DAVF, carotid stenosis, aneurysm, and related vascular planning scenarios.
+      </p>
+      <div class="grid gap-6 md:grid-cols-3">
+        {tools.map((item) => <ProcedureCard {...item} />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

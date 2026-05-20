@@ -4,46 +4,75 @@ import ProcedureCard from '../../components/ProcedureCard.astro';
 
 const toolCategories = [
   {
-    title: 'Vascular Assessment',
-    description: 'Classification systems, risk stratification tools, and diagnostic frameworks for vascular lesions.',
-    icon: '📊',
-    href: '/tools/vascular-assessment/',
-    tag: '4+ Tools',
+    title: 'Cerebral Angiography',
+    description: 'Diagnostic angiography workflow, structured reporting, access planning, and procedure safety checks.',
+    icon: '🧠',
+    href: '/tools/procedural-checklists',
+    tag: 'Core Workflow',
   },
   {
-    title: 'Procedural Checklists',
-    description: 'Step-by-step checklists for all common interventional neurology procedures.',
+    title: 'Procedure Checklists',
+    description: 'Step-by-step checklists for common neurointerventional procedures and peri-procedural handoff.',
     icon: '✅',
-    href: '/tools/procedural-checklists/',
+    href: '/tools/procedural-checklists',
     tag: '8+ Procedures',
   },
   {
-    title: 'Technique & Strategy',
-    description: 'Device selection, technique comparisons, and treatment strategy decision trees.',
-    icon: '🧬',
-    href: '/tools/technique-strategy/',
-    tag: 'Interactive',
+    title: 'AVM Evaluation',
+    description: 'AVM classification, angioarchitecture review, rupture context, and embolization planning.',
+    icon: '🎯',
+    href: '/tools/vascular-assessment',
+    tag: 'Assessment',
   },
   {
-    title: 'Neurointerventional Devices',
-    description: 'Complete device database, sizing tools, and compatibility information.',
+    title: 'Aneurysm Coiling',
+    description: 'Coiling strategy, adjunctive device selection, recurrence grading, and technique comparisons.',
+    icon: '🌀',
+    href: '/tools/technique-strategy',
+    tag: 'Strategy',
+  },
+  {
+    title: 'Device Compatibility',
+    description: 'Imported NeuroTool-style device specs with ID/OD checks, multi-device packing, angiography reserve, and DMSO compatibility.',
     icon: '🔧',
-    href: '/tools/devices/',
-    tag: 'Reference',
+    href: '/tools/devices',
+    tag: '1,991 Devices',
+  },
+  {
+    title: 'Prediction Tools',
+    description: 'Screens for unruptured aneurysm, DAVF, AVM, carotid stenosis, and intracranial hypotension.',
+    icon: '📈',
+    href: '/tools/devices',
+    tag: '5 Conditions',
+  },
+  {
+    title: 'Clinical Trials Reference',
+    description: 'Evidence lookup for trials relevant to aneurysm, AVM, carotid stenosis, stroke, and endovascular technique.',
+    icon: '📚',
+    href: '/learning-resources/clinical-trials',
+    tag: 'Evidence',
+  },
+  {
+    title: 'Vascular Assessment',
+    description: 'Classification systems, risk stratification tools, and diagnostic frameworks for vascular lesions.',
+    icon: '📊',
+    href: '/tools/vascular-assessment',
+    tag: 'Frameworks',
   },
 ];
 ---
 
-<BaseLayout title="Tools" description="Organized by purpose">
+<BaseLayout title="Tools" description="Comprehensive neurointerventional platform modules">
   <div class="max-w-7xl mx-auto px-4 py-8 md:py-12">
     <div class="mb-12">
-      <h1 class="text-3xl md:text-4xl font-bold text-primary-600 mb-4">Tools & Resources</h1>
-      <p class="text-lg text-gray-700 mb-8 max-w-2xl">
-        Professional tools for clinical decision-making. Find checklists, calculators, classifications, and device information organized by purpose.
+      <p class="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-primary-700">Unified application</p>
+      <h1 class="text-3xl md:text-4xl font-bold text-primary-600 mb-4">Comprehensive Neurointerventional Platform</h1>
+      <p class="text-lg text-gray-700 mb-8 max-w-3xl">
+        Specialized clinical tools in one place: cerebral angiography, procedure checklists, AVM evaluation, aneurysm coiling, device compatibility, prediction tools, and clinical trials reference.
       </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
       {toolCategories.map((category) => (
         <ProcedureCard {...category} />
       ))}
