@@ -1,0 +1,194 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import StatsCard from '../components/StatsCard.astro';
+import ProcedureCard from '../components/ProcedureCard.astro';
+import QuickAccessSection from '../components/QuickAccessSection.astro';
+
+const quickLinks = [
+  { title: 'Device Compatibility', icon: '🔧', href: '/tools/devices' },
+  { title: 'Cerebral Angiography', icon: '🧠', href: '/tools/procedural-checklists' },
+  { title: 'AVM Evaluation', icon: '🎯', href: '/tools/vascular-assessment' },
+  { title: 'Aneurysm Coiling', icon: '🌀', href: '/tools/technique-strategy' },
+  { title: 'Trials Reference', icon: '📚', href: '/learning-resources/clinical-trials' },
+];
+
+const scenarios = [
+  {
+    title: 'Unruptured Aneurysm',
+    description: 'Risk screen, morphology review, location factors, and treatment planning prompts.',
+    icon: '🩺',
+    href: '/tools/devices',
+    tag: 'Prediction',
+    riskLevel: 'moderate' as const,
+  },
+  {
+    title: 'DAVF',
+    description: 'Cortical venous reflux, venous ectasia, hemorrhage context, and symptom-risk triage.',
+    icon: '🧬',
+    href: '/tools/devices',
+    tag: 'Prediction',
+    riskLevel: 'high' as const,
+  },
+  {
+    title: 'AVM Planning',
+    description: 'Classification using size, eloquence, venous drainage, rupture context, and treatment fit.',
+    icon: '🎯',
+    href: '/tools/vascular-assessment',
+    tag: 'Planning',
+  },
+];
+
+const platformModules = [
+  {
+    title: 'Cerebral Angiography',
+    description: 'Diagnostic workflow, angiogram reporting, access planning, and post-procedure checks.',
+    icon: '🧠',
+    href: '/tools/procedural-checklists',
+    tag: 'Core Workflow',
+  },
+  {
+    title: 'Procedure Checklists',
+    description: 'Preparation, intraprocedural safety, complication tracking, and handoff support.',
+    icon: '✅',
+    href: '/tools/procedural-checklists',
+    tag: '8 Procedures',
+  },
+  {
+    title: 'AVM Evaluation',
+    description: 'Spetzler-Martin factors, rupture context, embolization planning, and treatment considerations.',
+    icon: '🎯',
+    href: '/tools/vascular-assessment',
+    tag: 'Planning',
+  },
+  {
+    title: 'Aneurysm Coiling',
+    description: 'Coiling strategy, adjunctive stents, device sizing, technique comparison, and recurrence grading.',
+    icon: '🌀',
+    href: '/tools/technique-strategy',
+    tag: 'Strategy',
+  },
+  {
+    title: 'Device Compatibility',
+    description: 'NeuroTool-informed ID/OD checks, multi-device packing, DMSO status, and device specifications.',
+    icon: '🔧',
+    href: '/tools/devices',
+    tag: '1,991 Devices',
+  },
+  {
+    title: 'Trials Reference',
+    description: 'Neurointerventional trials for aneurysm, AVM, carotid disease, stroke, and technique selection.',
+    icon: '📚',
+    href: '/learning-resources/clinical-trials',
+    tag: 'Evidence',
+  },
+];
+
+const resources = [
+  {
+    title: 'Prediction Tools',
+    description: 'Screens for unruptured aneurysm, DAVF, AVM, carotid stenosis, and intracranial hypotension.',
+    icon: '📈',
+    href: '/tools/devices',
+    tag: '5 Models',
+  },
+  {
+    title: 'Vascular Assessment',
+    description: 'Classification systems, risk stratification, and diagnostic frameworks.',
+    icon: '📊',
+    href: '/tools/vascular-assessment',
+    tag: 'Frameworks',
+  },
+  {
+    title: 'Learning Resources',
+    description: 'Decision trees, calculators, quick reference material, and evidence summaries.',
+    icon: '📖',
+    href: '/learning-resources',
+    tag: 'Reference',
+  },
+];
+---
+
+<BaseLayout title="Comprehensive Neurointerventional Platform">
+  <section class="bg-gradient-to-r from-primary-50 to-primary-100 py-16 md:py-24 px-4">
+    <div class="max-w-5xl mx-auto text-center">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+        Comprehensive Neurointerventional Platform
+      </h1>
+      <p class="text-lg md:text-xl text-gray-700 mb-8 max-w-3xl mx-auto">
+        Specialized clinical tools in one unified application: cerebral angiography, procedure checklists, AVM evaluation, aneurysm coiling, device compatibility, prediction screens, and trials reference.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a href="/tools/devices" class="inline-block bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-8 rounded-lg transition-colors">
+          Open Device Checker
+        </a>
+        <a href="#platform-modules" class="inline-block bg-white hover:bg-gray-100 text-primary-700 font-bold py-3 px-8 rounded-lg transition-colors border border-primary-200">
+          Browse Modules
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 md:py-16 px-4 bg-white">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-8 text-center">Platform Overview</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatsCard number="1,991" label="Device Specs" />
+        <StatsCard number="25+" label="Procedure Guides" />
+        <StatsCard number="5" label="Prediction Tools" />
+        <StatsCard number="100+" label="Evidence References" />
+      </div>
+    </div>
+  </section>
+
+  <section id="quick-access" class="py-12 md:py-16 px-4 bg-gray-50">
+    <div class="max-w-6xl mx-auto">
+      <QuickAccessSection
+        title="Quick Access"
+        description="Jump to the most commonly used neurointerventional modules"
+        links={quickLinks}
+      />
+    </div>
+  </section>
+
+  <section id="platform-modules" class="py-12 md:py-16 px-4 bg-white">
+    <div class="max-w-6xl mx-auto">
+      <div class="mb-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Platform Modules</h2>
+        <p class="text-gray-600">A unified workspace for device selection, procedural planning, disease-specific prediction, and evidence lookup</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {platformModules.map((tool) => (
+          <ProcedureCard {...tool} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 md:py-16 px-4 bg-gray-50">
+    <div class="max-w-6xl mx-auto">
+      <div class="mb-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Prediction & Scenario Screens</h2>
+        <p class="text-gray-600">Condition-specific screens connected to planning and device selection workflows</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {scenarios.map((scenario) => (
+          <ProcedureCard {...scenario} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 md:py-16 px-4 bg-white">
+    <div class="max-w-6xl mx-auto">
+      <div class="mb-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">More Clinical Resources</h2>
+        <p class="text-gray-600">Supporting references for day-to-day neurointerventional decision-making</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {resources.map((resource) => (
+          <ProcedureCard {...resource} />
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
