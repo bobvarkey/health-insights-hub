@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { AbbreviationHover, AbbrText } from "@/components/AbbreviationHover";
 import { Link } from "react-router-dom";
-import { Pill, Syringe, ChevronRight, ArrowRight, CheckCircle2, AlertTriangle, Heart, Activity, Scale, Brain, ArrowDown, FileText, BookOpen } from "lucide-react";
+import { Pill, Syringe, ChevronRight, ChevronDown, ArrowRight, CheckCircle2, AlertTriangle, Heart, Activity, Scale, Brain, ArrowDown, FileText, BookOpen } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 
 // Algorithm Step Component
@@ -68,10 +70,10 @@ const AlgorithmStep = ({ step, title, description, criteria, medications, icon, 
                     <div key={i} className="flex items-start gap-2 p-2 rounded bg-background/50">
                       <CheckCircle2 className="h-3 w-3 text-emerald-500 mt-0.5 shrink-0" />
                       <div>
-                        <p className="text-sm font-medium">{med.name}</p>
-                        <p className="text-xs text-muted-foreground">{med.class}</p>
+                        <p className="text-sm font-medium"><AbbrText text={med.name} /></p>
+                        <p className="text-xs text-muted-foreground"><AbbrText text={med.class} /></p>
                         {med.notes && (
-                          <p className="text-xs text-primary mt-0.5">{med.notes}</p>
+                          <p className="text-xs text-primary mt-0.5"><AbbrText text={med.notes} /></p>
                         )}
                       </div>
                     </div>
@@ -102,51 +104,131 @@ const AlgorithmStep = ({ step, title, description, criteria, medications, icon, 
   );
 };
 
-// Insulin Reference Section
+// ─── Insulin Brand Reference Data ───
+const INSULIN_TYPES_DATA = [
+  {
+    category: "Rapid-Acting (Onset: 10-15 min, Peak: 1-2h, Duration: 3-5h)",
+    items: [
+      { generic: "Insulin Lispro", usBrand: "Humalog", indianBrands: ["Humalog", "Lispro (Biocon)"], note: "Mealtime insulin. Inject 0-15 min before meals. Most commonly used in insulin pumps." },
+      { generic: "Insulin Aspart", usBrand: "NovoLog / Fiasp", indianBrands: ["NovoRapid", "NovoLog", "Aspart (Wockhardt)"], note: "Fiasp = faster-acting aspart with niacinamide. NovoRapid is widely available in India." },
+      { generic: "Insulin Glulisine", usBrand: "Apidra", indianBrands: ["Apidra"], note: "Alternative to lispro/aspart. May have slightly faster onset. Less commonly used in India." },
+    ],
+  },
+  {
+    category: "Short-Acting / Regular (Onset: 30 min, Peak: 2-4h, Duration: 5-8h)",
+    items: [
+      { generic: "Regular Insulin (Soluble)", usBrand: "Humulin R / Novolin R", indianBrands: ["Actrapid", "Humulin R", "Wosulin R", "Insugen R", "Insuman Rapid"], note: "IV compatible. Used for sliding scales, DKA management, and pre-meal coverage. Inject 30 min before meals." },
+    ],
+  },
+  {
+    category: "Intermediate-Acting (Onset: 2-4h, Peak: 4-10h, Duration: 10-18h)",
+    items: [
+      { generic: "NPH Insulin (Isophane)", usBrand: "Humulin N / Novolin N", indianBrands: ["Humulin N", "Wosulin N", "Insugen N", "Insuman Basal", "NPH (Biocon)"], note: "Cloudy suspension — must be resuspended before use. Traditionally BID dosing. Higher variability vs analogs." },
+    ],
+  },
+  {
+    category: "Long-Acting Basal (Onset: 1-2h, Peak: Flat/None, Duration: 18-24+h)",
+    items: [
+      { generic: "Insulin Glargine U100", usBrand: "Lantus / Basaglar", indianBrands: ["Lantus", "Basalog", "Glaritus (Wockhardt)", "Glargine (Biocon)", "Toujeo (U300)"], note: "Most prescribed basal insulin. Flat profile, once-daily dosing. U300 version has longer duration (36h)." },
+      { generic: "Insulin Detemir", usBrand: "Levemir", indianBrands: ["Levemir"], note: "Duration slightly shorter than glargine (~16-20h). May require BID dosing in some patients. Lower weight gain vs glargine." },
+      { generic: "Insulin Degludec", usBrand: "Tresiba", indianBrands: ["Tresiba", "Degludec (Biocon)"], note: "Ultra-long (42h). Flexible dosing (8-40h window). Lower hypoglycemia risk vs glargine. U100/U200 available." },
+    ],
+  },
+  {
+    category: "Pre-Mixed Insulins (Convenience, less flexible)",
+    items: [
+      { generic: "Biphasic Insulin Aspart 30 (30% aspart, 70% protamine aspart)", usBrand: "NovoMix 30", indianBrands: ["NovoMix 30"], note: "30/70 mix. BID dosing. Good for patients who struggle with multiple injections. Less flexible than basal-bolus." },
+      { generic: "Biphasic Human Insulin 30/70 (30% regular, 70% NPH)", usBrand: "Humulin 70/30", indianBrands: ["Humulin 70/30", "Wosulin 30/70", "Insugen 30/70", "Mixtard 30 (Novo)"], note: "Traditional mix. Lower cost. BID dosing. Widely available in India at low cost." },
+      { generic: "Biphasic Insulin Lispro 25/50", usBrand: "Humalog Mix 25/50", indianBrands: ["Humalog Mix 25"], note: "25% lispro / 75% protamine lispro. For patients needing rapid-acting component." },
+    ],
+  },
+  {
+    category: "Concentrated Insulins (for severe insulin resistance)",
+    items: [
+      { generic: "Insulin Glargine U300", usBrand: "Toujeo", indianBrands: ["Toujeo"], note: "3× concentrated glargine. 300 U/mL. Longer/flatter than U100. Requires ~15-20% higher dose vs U100." },
+      { generic: "Insulin Degludec U200", usBrand: "Tresiba U200", indianBrands: ["Tresiba U200"], note: "2× concentrated degludec. Same profile as U100, lower injection volume." },
+      { generic: "Regular U500 (Human Insulin)", usBrand: "Humulin R U-500", indianBrands: ["—"], note: "5× concentrated. For patients requiring >200 U/day of insulin. Requires careful dosing oversight." },
+    ],
+  },
+];
+
+// ─── Insulin Tooltip Component ───
+function InsulinTooltip({ brand }: { brand: string }) {
+  // Find insulin by brand name
+  const found = INSULIN_TYPES_DATA.flatMap(c => c.items).find(
+    i => i.generic.includes(brand) || i.usBrand.includes(brand) || i.indianBrands.some(b => b.includes(brand))
+  );
+  if (!found) return null;
+  return (
+    <div className="group relative inline-block">
+      <span className="text-foreground font-medium underline decoration-dotted decoration-muted-foreground/40 cursor-help">{brand}</span>
+      <div className="absolute left-0 bottom-full mb-2 w-64 hidden group-hover:block z-50">
+        <div className="bg-popover text-popover-foreground text-xs p-3 rounded-lg shadow-xl border border-border">
+          <p className="font-semibold mb-1">{found.generic}</p>
+          <p className="text-muted-foreground mb-1.5">
+            <span className="font-medium text-foreground">US: </span>{found.usBrand}
+          </p>
+          <p className="text-muted-foreground mb-1.5">
+            <span className="font-medium text-foreground">🇮🇳 India: </span>{found.indianBrands.join(", ")}
+          </p>
+          <p className="text-muted-foreground">{found.note}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Insulin Reference Section ───
 const InsulinReferenceSection = () => (
-  <div className="mt-4 p-4 rounded-lg border-2 border-destructive/30 bg-destructive/5">
-    <h4 className="font-semibold mb-3 flex items-center gap-2">
-      <Syringe className="h-4 w-4" />
-      Insulin Types Quick Reference
-    </h4>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div className="space-y-2">
-        <p className="text-sm font-medium">Insulin Pharmacology Chart</p>
-        <img
-          src="/images/Insulins.jpg"
-          alt="Types of Insulin - Onset, Peak, Duration"
-          className="w-full rounded-lg border shadow-sm"
-        />
-        <p className="text-xs text-muted-foreground">
-          Complete guide: Rapid, Short, Intermediate, Long-acting insulin
-        </p>
-      </div>
-      <div className="space-y-2">
-        <p className="text-sm font-medium">Activity Profile Graph</p>
-        <img
-          src="/images/insulin-types-graph.png"
-          alt="Insulin Activity Over Time"
-          className="w-full rounded-lg border shadow-sm"
-        />
-        <p className="text-xs text-muted-foreground">
-          Visual comparison of insulin action curves
-        </p>
-      </div>
-    </div>
-    <div className="mt-4 flex gap-2">
-      <Link to="/insulin-titration">
-        <Button variant="outline" size="sm">
-          Insulin Titration Tool
-          <ChevronRight className="h-4 w-4 ml-1" />
+  <div className="mt-4">
+    <Collapsible>
+      <CollapsibleTrigger asChild>
+        <Button variant="outline" className="w-full justify-between gap-2">
+          <span className="flex items-center gap-2"><Syringe className="h-4 w-4" /> Insulin Brand Name Reference (US & India)</span>
+          <ChevronDown className="h-4 w-4" />
         </Button>
-      </Link>
-      <Link to="/sliding-scale">
-        <Button variant="outline" size="sm">
-          Sliding Scale
-          <ChevronRight className="h-4 w-4 ml-1" />
-        </Button>
-      </Link>
-    </div>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="mt-3 space-y-4">
+        {INSULIN_TYPES_DATA.map((cat, ci) => (
+          <div key={ci} className="p-3 rounded-lg border border-border bg-card/50">
+            <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">{cat.category}</p>
+            <div className="space-y-2">
+              {cat.items.map((item, ii) => (
+                <div key={ii} className="p-2.5 rounded-lg bg-muted/30 border border-border/40">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
+                    <div>
+                      <p className="text-[10px] text-muted-foreground uppercase font-semibold mb-0.5">Generic</p>
+                      <p className="text-foreground">{item.generic.split(" (")[0]}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-muted-foreground uppercase font-semibold mb-0.5">US Brand</p>
+                      <p className="text-foreground"><AbbrText text={item.usBrand} /></p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-muted-foreground uppercase font-semibold mb-0.5">🇮🇳 India</p>
+                      <p className="text-foreground"><AbbrText text={item.indianBrands.join(", ")} /></p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1.5"><AbbrText text={item.note} /></p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+        <div className="flex gap-2">
+          <Link to="/insulin-titration">
+            <Button variant="outline" size="sm">
+              Insulin Titration Tool <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </Link>
+          <Link to="/sliding-scale">
+            <Button variant="outline" size="sm">
+              Sliding Scale <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </Link>
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
   </div>
 );
 
@@ -523,24 +605,24 @@ const DrugClassesComparison = () => {
           {drugClasses.map((drug, i) => (
             <div key={i} className="p-3 rounded-lg bg-muted/30 border border-border/50">
               <div className="flex items-center justify-between mb-2">
-                <p className="font-medium">{drug.class}</p>
+                <p className="font-medium"><AbbrText text={drug.class} /></p>
                 <div className="flex gap-2">
                   <Badge variant="outline" className="text-xs">A1c ↓ {drug.a1cReduction}</Badge>
                   <Badge variant={drug.hypoRisk === "Low" ? "secondary" : "destructive"} className="text-xs">
                     Hypo: {drug.hypoRisk}
                   </Badge>
                 </div>
-              </div>              <p className="text-xs text-muted-foreground mb-2">{drug.mechanism}</p>
+              </div>              <p className="text-xs text-muted-foreground mb-2"><AbbrText text={drug.mechanism} /></p>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
                   <span className="text-muted-foreground">Weight: </span>
                   <span className={cn(
                     drug.weight.includes("Loss") ? "text-success" : drug.weight.includes("Gain") ? "text-warning" : ""
-                  )}>{drug.weight}</span>
+                  )}><AbbrText text={drug.weight} /></span>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Weight: </span>
-                  <span>{drug.weight}</span>
+                  <span><AbbrText text={drug.weight} /></span>
                 </div>
               </div>
               <div className="mt-2 grid grid-cols-2 gap-2">

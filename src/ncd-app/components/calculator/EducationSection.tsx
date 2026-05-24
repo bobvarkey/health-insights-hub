@@ -448,7 +448,7 @@ export default function EducationSection() {
           </div>
           <h3 className="font-display text-lg font-bold text-foreground">Lp(a) — Lipoprotein(a)</h3>
         </div>
-
+        
         {/* Lp(a) Levels with Color-Coded Icons */}
         <div className="space-y-3 mb-4">
           <div className="flex items-center gap-3 p-3 rounded-lg bg-success/5 border border-success/20">
@@ -459,7 +459,7 @@ export default function EducationSection() {
               <p className="text-sm font-semibold text-success">Optimal: ≤14 mg/dL (≤35 nmol/L)</p>
             </div>
           </div>
-
+          
           <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/20">
               <Heart className="h-4 w-4 text-primary" />
@@ -468,7 +468,7 @@ export default function EducationSection() {
               <p className="text-sm font-semibold text-primary">Normal: ≤30 mg/dL (≤75 nmol/L)</p>
             </div>
           </div>
-
+          
           <div className="flex items-center gap-3 p-3 rounded-lg bg-danger/5 border border-danger/20">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-danger/20">
               <AlertTriangle className="h-4 w-4 text-danger" />
@@ -489,7 +489,7 @@ export default function EducationSection() {
               Lp(a) 10–49 mg/dL (25–124 nmol/L) → <strong className="text-primary">28% higher</strong> cardiovascular risk
             </p>
           </div>
-
+          
           <div className="flex items-center gap-3">
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-warning/20">
               <TrendingUp className="h-3 w-3 text-warning" />
@@ -498,7 +498,7 @@ export default function EducationSection() {
               Lp(a) 50–99 mg/dL (125–249 nmol/L) → <strong className="text-warning">44% higher</strong> cardiovascular risk
             </p>
           </div>
-
+          
           <div className="flex items-center gap-3">
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-danger/20">
               <TrendingUp className="h-3 w-3 text-danger" />
@@ -522,7 +522,7 @@ export default function EducationSection() {
           </div>
           <h3 className="font-display text-lg font-bold text-foreground">Lp(a) & Relative ASCVD Risk</h3>
         </div>
-
+        
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -623,7 +623,7 @@ export default function EducationSection() {
           </div>
           <h3 className="font-display text-lg font-bold text-foreground">ApoB — Apolipoprotein B</h3>
         </div>
-
+        
         <div className="space-y-3">
           <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-500/5 border border-purple-500/20">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-purple-500/20 flex-shrink-0">
@@ -633,7 +633,7 @@ export default function EducationSection() {
               LDL is sometimes <strong className="text-purple-500">calculated</strong>; ApoB is always <strong className="text-purple-500">measured</strong>.
             </p>
           </div>
-
+          
           <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-500/20 flex-shrink-0">
               <Activity className="h-4 w-4 text-blue-500" />
@@ -642,7 +642,7 @@ export default function EducationSection() {
               LDL is just one of three atherogenic particles. <strong className="text-blue-500">ApoB counts all of them.</strong>
             </p>
           </div>
-
+          
           <div className="flex items-start gap-3 p-3 rounded-lg bg-cyan-500/5 border border-cyan-500/20">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-cyan-500/20 flex-shrink-0">
               <TrendingUp className="h-4 w-4 text-cyan-500" />
@@ -651,7 +651,7 @@ export default function EducationSection() {
               ApoB is a <strong className="text-cyan-500">more accurate predictor</strong> of cardiovascular events than LDL-C.
             </p>
           </div>
-
+          
           <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-emerald-500/20 flex-shrink-0">
               <Heart className="h-4 w-4 text-emerald-500" />
@@ -660,7 +660,7 @@ export default function EducationSection() {
               When ApoB and LDL-C disagree, <strong className="text-emerald-500">ApoB is the better predictor of risk</strong>.
             </p>
           </div>
-
+          
           <div className="flex items-start gap-3 p-3 rounded-lg bg-amber-500/5 border border-amber-500/20">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-amber-500/20 flex-shrink-0">
               <AlertTriangle className="h-4 w-4 text-amber-500" />

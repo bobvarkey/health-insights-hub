@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AbbreviationHover } from "@/components/AbbreviationHover";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -244,8 +245,8 @@ export default function HypertensionOverview() {
               <thead>
                 <tr className="border-b border-border">
                   <th className="text-left py-3 px-2 font-medium">Category</th>
-                  <th className="text-center py-3 px-2 font-medium">SBP</th>
-                  <th className="text-center py-3 px-2 font-medium">DBP</th>
+                  <th className="text-center py-3 px-2 font-medium"><AbbreviationHover term="SBP">SBP</AbbreviationHover></th>
+                  <th className="text-center py-3 px-2 font-medium"><AbbreviationHover term="DBP">DBP</AbbreviationHover></th>
                   <th className="text-left py-3 px-2 font-medium">Action</th>
                 </tr>
               </thead>

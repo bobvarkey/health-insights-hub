@@ -1,664 +1,276 @@
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { AbbreviationHover, AbbrText } from "@/components/AbbreviationHover";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { SectionCard } from "@/components/ui/section-card";
-import {
-  Pill,
-  AlertCircle,
-  TrendingDown,
-  Activity,
-  Utensils,
-  Info,
-  ChevronDown,
-} from "lucide-react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Pill, ArrowLeft, Target, BookOpen, Stethoscope, ClipboardCopy, Syringe, AlertTriangle, Activity, Heart, FileText } from "lucide-react";
+import { toast } from "sonner";
+import type { LAIResult } from "./LipidsTab";
 
-// Statin Intensity Categories
-const STATIN_INTENSITY = [
-  {
-    category: "High-Intensity Statins",
-    goal: "LDL-C reduction ≥50%",
-    color: "text-danger",
-    bgColor: "bg-danger/5",
-    borderColor: "border-danger/20",
-    statins: [
-      { name: "Atorvastatin", dose: "40–80 mg daily" },
-      { name: "Rosuvastatin", dose: "20–40 mg daily" },
-    ],
-    indications: [
-      "Clinical ASCVD",
-      "LDL-C ≥190 mg/dL",
-      "Age 40–75 with diabetes",
-      "10-year ASCVD risk ≥20%",
-    ],
+const TREATMENT_RECS: Record<string, { title: string; drug: string; rationale: string; followUp: string; alternative: string; mechanism: string; monitoring: string; targets: string[] }> = {
+  "EHR-A": {
+    title: "High-Intensity Statin + Ezetimibe",
+    drug: "Atorvastatin 40-80 mg OD or Rosuvastatin 20-40 mg OD + Ezetimibe 10 mg OD",
+    rationale: "ASCVD alone or with minor risk features. Dual therapy achieves ~55-65% LDL reduction, targeting <55 mg/dL. Add PCSK9i if not at target after 6 weeks.",
+    followUp: "Recheck lipids at 6 weeks. If LDL >55, consider PCSK9i. Recheck again at 12 weeks.",
+    alternative: "If statin-intolerant: Rosuvastatin 5-10 mg + Ezetimibe + Bempedoic acid 180 mg OD. Consider Red Yeast Rice with monitoring if unwilling to take statins.",
+    mechanism: "Statin: HMG-CoA reductase inhibition (liver). Ezetimibe: NPC1L1 inhibition (gut) — blocks intestinal cholesterol absorption. Synergistic ~20% additional LDL reduction on top of statin.",
+    monitoring: "LFTs and CK at baseline, 4-12 weeks after initiation, then 6-12 monthly. Lipids at 6 weeks, then 3-6 months until stable.",
+    targets: ["LDL-C < 55 mg/dL (< 1.4 mmol/L)", "Non-HDL-C < 85 mg/dL (< 2.2 mmol/L)", "ApoB < 70 mg/dL (< 0.7 g/L)", "lp(a): Test once — if ≥50, consider PCSK9i early"],
   },
-  {
-    category: "Moderate-Intensity Statins",
-    goal: "LDL-C reduction 30–49%",
-    color: "text-warning",
-    bgColor: "bg-warning/5",
-    borderColor: "border-warning/20",
-    statins: [
-      { name: "Atorvastatin", dose: "10–20 mg daily" },
-      { name: "Rosuvastatin", dose: "5–10 mg daily" },
-      { name: "Simvastatin", dose: "20–40 mg daily" },
-      { name: "Pravastatin", dose: "40–80 mg daily" },
-      { name: "Pitavastatin", dose: "2–4 mg daily" },
-    ],
-    indications: [
-      "10-year ASCVD risk 7.5–19.9%",
-      "Age 40–75 with diabetes + 10-yr risk <7.5%",
-      "CAC score 1–99 AU",
-    ],
+  "EHR-B": {
+    title: "Maximal Lipid-Lowering (Triple Therapy)",
+    drug: "Atorvastatin 80 mg OD + Ezetimibe 10 mg OD + PCSK9i (Evolocumab 140 mg SC q2w or Alirocumab 150 mg SC q2w)",
+    rationale: "ASCVD + ≥1 high-risk feature or polyvascular disease. Triple therapy needed for target ≤30 mg/dL. The FOURIER and ODYSSEY trials demonstrated ~60% MACE reduction with this approach.",
+    followUp: "LDL at 4 weeks. Adjust as needed. Consider quarterly follow-up given high intensity.",
+    alternative: "Rosuvastatin 40 mg + Ezetimibe + Inclisiran 284 mg SC (at 0, 3 months then biannually). Bempedoic acid 180 mg OD if PCSK9i not tolerated.",
+    mechanism: "Statin: Hepatic cholesterol synthesis ↓. Ezetimibe: Intestinal absorption ↓. PCSK9i: LDL receptor degradation ↓ → more receptors on hepatocyte surface → dramatic LDL clearance ↑.",
+    monitoring: "LFTs, CK, renal function at baseline and follow-up. LDL monthly until stable. Watch for injection site reactions with PCSK9i.",
+    targets: ["LDL-C < 30 mg/dL (< 0.8 mmol/L) target", "Non-HDL-C < 60 mg/dL (< 1.5 mmol/L)", "ApoB < 45 mg/dL (< 0.45 g/L)", "Consider Lp(a) apheresis if recurrent events despite targets"],
   },
-  {
-    category: "Low-Intensity Statins",
-    goal: "LDL-C reduction <30%",
-    color: "text-primary",
-    bgColor: "bg-primary/5",
-    borderColor: "border-primary/20",
-    statins: [
-      { name: "Simvastatin", dose: "10 mg daily" },
-      { name: "Pravastatin", dose: "10–20 mg daily" },
-      { name: "Lovastatin", dose: "20 mg daily" },
-      { name: "Fluvastatin", dose: "20–40 mg daily" },
-    ],
-    indications: [
-      "10-year ASCVD risk 5–7.5%",
-      "Cannot tolerate moderate intensity",
-      "Age >75 with limited life expectancy",
-    ],
+  "EHR-C": {
+    title: "Ultra-Maximal Multi-Mechanism Therapy",
+    drug: "Max tolerated statin (Atorva 80 / Rosuva 40) + Ezetimibe 10 mg + PCSK9i + Bempedoic acid 180 mg OD",
+    rationale: "Recurrent/progressive events despite therapy. Multi-mechanism approach targeting LDL <30 mg/dL. Consider adding Colchicine 0.5 mg OD for anti-inflammatory benefit (COLCOT/CANTOS).",
+    followUp: "Monthly monitoring. Multi-disciplinary lipid clinic referral. Consider Lp(a) apheresis if events persist despite LDL target.",
+    alternative: "Add Colchicine 0.5 mg OD for anti-inflammatory. Consider fibrate if TG elevated. Evinacumab (ANGPTL3 inhibitor) if HoFH.",
+    mechanism: "Statin + Ezetimibe + PCSK9i + Bempedoic acid (ATP-citrate lyase inhibition — works upstream of HMG-CoA reductase, avoids muscle issues). Each adds ~15-20% LDL reduction.",
+    monitoring: "Monthly LDL. Renal and hepatic panels. Watch for gout with Bempedoic acid.",
+    targets: ["LDL-C < 30 mg/dL (< 0.8 mmol/L) — ultra-low target", "Non-HDL-C < 60 mg/dL", "ApoB < 40 mg/dL", "hsCRP < 2 mg/L (anti-inflammatory goal)"],
   },
+  "VHR-A": {
+    title: "High-Intensity Statin",
+    drug: "Atorvastatin 40-80 mg OD or Rosuvastatin 20-40 mg OD",
+    rationale: "Very high risk equivalent (ASCVD equivalent). Statin alone may reach target. Add Ezetimibe if LDL remains >55 at 6-8 weeks.",
+    followUp: "Lipids at 6-8 weeks. Add Ezetimibe 10 mg if LDL >55. Recheck at 12 weeks.",
+    alternative: "If statin-intolerant: Bempedoic acid 180 mg OD + Ezetimibe 10 mg OD. Moderate statin + Ezetimibe if high dose not tolerated.",
+    mechanism: "High-intensity statin reduces LDL by ≥50%. Achieves target in ~50% of VHR patients as monotherapy.",
+    monitoring: "Baseline LFTs, CK. Recheck at 4-12 weeks. Annual lipids once stable.",
+    targets: ["LDL-C < 55 mg/dL (< 1.4 mmol/L)", "Non-HDL-C < 85 mg/dL", "ApoB < 70 mg/dL"],
+  },
+  "VHR-B": {
+    title: "High-Intensity Statin + Ezetimibe",
+    drug: "Atorvastatin 40-80 mg OD + Ezetimibe 10 mg OD",
+    rationale: "DM with TOD — combination therapy indicated from the start per LAI 2023. Dual therapy ensures ≥60% LDL reduction.",
+    followUp: "Lipids at 6 weeks. Consider PCSK9i if LDL >55 despite max therapy (rare).",
+    alternative: "Rosuvastatin 20-40 mg + Ezetimibe. GLP-1 RA/SGLT2i for CV protection in diabetes.",
+    mechanism: "Dual blockade: hepatic synthesis + intestinal absorption. Achieves target in ~65%. GLP-1 RA and SGLT2i provide independent CV benefit beyond lipids.",
+    monitoring: "Lipids at 6 weeks. HbA1c and renal function q3-6 months.",
+    targets: ["LDL-C < 55 mg/dL (< 1.4 mmol/L)", "Non-HDL-C < 85 mg/dL", "HbA1c < 7%", "BP < 130/80"],
+  },
+  "VHR-C": {
+    title: "Maximal Therapy (Triple Approach)",
+    drug: "Max tolerated statin + Ezetimibe 10 mg OD ± PCSK9i",
+    rationale: "CKD 3B-4, FH, or LDL ≥190. High residual risk — triple therapy often needed. Add PCSK9i early if multiple high-risk features.",
+    followUp: "Lipids at 4-6 weeks. Add PCSK9i early if target not met.",
+    alternative: "Consider Inclisiran 284 mg SC (0 and 3 months, then biannually) for improved adherence. Bempedoic acid if PCSK9i not an option.",
+    mechanism: "Triple mechanism covers production, absorption, and receptor regulation. Inclisiran uses siRNA to silence PCSK9 production — biannual dosing improves adherence.",
+    monitoring: "Monthly until stable. eGFR in CKD patients monthly initially.",
+    targets: ["LDL-C < 55 mg/dL (< 1.4 mmol/L)", "Non-HDL-C < 85 mg/dL", "ApoB < 65 mg/dL"],
+  },
+  "HR": {
+    title: "High-Intensity Statin",
+    drug: "Atorvastatin 20-40 mg OD or Rosuvastatin 10-20 mg OD",
+    rationale: "Multiple risk factors or diabetes alone. Target LDL <70 mg/dL. Intensify if not at target.",
+    followUp: "Lipids at 12 weeks. Escalate to max dose or add Ezetimibe if not at target.",
+    alternative: "Moderate statin + Ezetimibe if high-dose not tolerated.",
+    mechanism: "High-intensity for primary prevention in high-risk. ~50% LDL reduction.",
+    monitoring: "Baseline lipids, LFTs. Recheck at 12 weeks.",
+    targets: ["LDL-C < 70 mg/dL (< 1.8 mmol/L)", "Non-HDL-C < 100 mg/dL", "ApoB < 80 mg/dL"],
+  },
+  "MOD": {
+    title: "Moderate-Intensity Statin",
+    drug: "Atorvastatin 10-20 mg OD or Rosuvastatin 5-10 mg OD",
+    rationale: "Intermediate risk. Moderate statin expected to achieve <100 mg/dL from most starting points.",
+    followUp: "Recheck lipids at 12 weeks. Escalate if not at target.",
+    alternative: "Lifestyle modification (3-month trial) if LDL 100-129 with borderline risk. Add Ezetimibe if moderate statin insufficient.",
+    mechanism: "Moderate-intensity: ~30-50% LDL reduction. Adequate for most moderate-risk patients.",
+    monitoring: "Lipids at 12 weeks, then annually.",
+    targets: ["LDL-C < 100 mg/dL (< 2.6 mmol/L)", "Non-HDL-C < 130 mg/dL", "ASCVD risk reassessment at 12 weeks"],
+  },
+  "LOW": {
+    title: "Lifestyle Modification",
+    drug: "No pharmacotherapy indicated at this time",
+    rationale: "Low risk. Diet, exercise, and periodic surveillance. Consider risk-enhancing factors (Lp(a), hsCRP, FHx) before deciding.",
+    followUp: "Recheck lipids in 6-12 months. Reassess risk factors.",
+    alternative: "Consider moderate statin if CAC >0 or Lp(a) ≥50 on shared decision-making. Plant sterols/stanols 2 g/day as OTC option.",
+    mechanism: "Mediterranean diet reduces LDL ~10-15%. Plant sterols block cholesterol absorption. Regular exercise increases HDL and reduces TG.",
+    monitoring: "Lipids annually. ASCVD risk reassessment every 4-6 years.",
+    targets: ["LDL-C < 130 mg/dL (< 3.4 mmol/L) — primary prevention", "Non-HDL-C < 160 mg/dL", "LDL reduction: ≥30% with lifestyle if starting high"],
+  },
+};
+
+// ─── Statin Potency Table ───
+const STATIN_TABLE = [
+  { drug: "Atorvastatin 10 mg", potency: "Moderate", ldlReduction: "~37%" },
+  { drug: "Atorvastatin 20 mg", potency: "Moderate-High", ldlReduction: "~43%" },
+  { drug: "Atorvastatin 40 mg", potency: "High", ldlReduction: "~48%" },
+  { drug: "Atorvastatin 80 mg", potency: "High", ldlReduction: "~55%" },
+  { drug: "Rosuvastatin 5 mg", potency: "Moderate", ldlReduction: "~38%" },
+  { drug: "Rosuvastatin 10 mg", potency: "Moderate-High", ldlReduction: "~43%" },
+  { drug: "Rosuvastatin 20 mg", potency: "High", ldlReduction: "~48%" },
+  { drug: "Rosuvastatin 40 mg", potency: "High", ldlReduction: "~55%" },
+  { drug: "Pitavastatin 2-4 mg", potency: "Moderate", ldlReduction: "~35-40%" },
+  { drug: "+ Ezetimibe 10 mg", potency: "Add-on", ldlReduction: "+15-20%" },
+  { drug: "+ PCSK9i", potency: "Add-on", ldlReduction: "+50-60%" },
+  { drug: "+ Bempedoic acid", potency: "Add-on", ldlReduction: "+15-20%" },
+  { drug: "+ Inclisiran", potency: "Add-on", ldlReduction: "+50% (biannual)" },
 ];
 
-// Add-on Therapy Options
-const ADDON_THERAPIES = [
-  {
-    name: "Ezetimibe",
-    class: "Cholesterol Absorption Inhibitor",
-    mechanism: "Inhibits intestinal cholesterol absorption",
-    ldlReduction: "15–20%",
-    firstLine: true,
-    dosing: "10 mg once daily",
-    notes: "First-line add-on if statin-intolerant or not at goal",
-    color: "text-emerald-600",
-    bgColor: "bg-emerald-500/5",
-    borderColor: "border-emerald-500/20",
-  },
-  {
-    name: "PCSK9 Inhibitors",
-    class: "PCSK9 Monoclonal Antibodies",
-    mechanism: "Increase hepatic LDL receptor recycling",
-    ldlReduction: "50–60%",
-    firstLine: false,
-    agents: [
-      { name: "Evolocumab", dosing: "140 mg SC every 2 weeks or 420 mg monthly" },
-      { name: "Alirocumab", dosing: "75–150 mg SC every 2 weeks" },
-    ],
-    indications: [
-      "FH (familial hypercholesterolemia)",
-      "ASCVD on max statin ± ezetimibe not at goal",
-      "Statin intolerance with high-risk features",
-    ],
-    color: "text-purple-600",
-    bgColor: "bg-purple-500/5",
-    borderColor: "border-purple-500/20",
-  },
-  {
-    name: "Bempedoic Acid",
-    class: "ATP Citrate Lyase Inhibitor",
-    mechanism: "Upstream inhibition of cholesterol synthesis",
-    ldlReduction: "15–25%",
-    firstLine: false,
-    dosing: "180 mg once daily",
-    notes: "Option for statin-intolerant patients; ↓ CV events in CLEAR trial",
-    color: "text-cyan-600",
-    bgColor: "bg-cyan-500/5",
-    borderColor: "border-cyan-500/20",
-  },
-  {
-    name: "Inclisiran",
-    class: "siRNA (PCSK9 synthesis inhibitor)",
-    mechanism: "Reduces hepatic PCSK9 synthesis",
-    ldlReduction: "50%",
-    firstLine: false,
-    dosing: "Initial: Day 1, Day 90, then every 6 months",
-    notes: "Twice-yearly dosing advantage for adherence",
-    color: "text-indigo-600",
-    bgColor: "bg-indigo-500/5",
-    borderColor: "border-indigo-500/20",
-  },
-];
+// ─── Drug safety guide ───
+const SAFETY_NOTE = `
+• Statins: Monitor LFTs at baseline + 12 weeks. Myalgia in ~5-10% (true myositis rare ~0.1%). Avoid if active liver disease (ALT >3× ULN).
+• Ezetimibe: Generally well-tolerated. GI side effects ~2-3%.
+• PCSK9i: Injection site reactions ~5%. Virtually no hepatic/muscle toxicity.
+• Bempedoic acid: Gout risk ↑ (elevated uric acid). Avoid with eGFR <30.
+• Fibrates: Avoid gemfibrozil with statins (myopathy risk). Fenofibrate safer.
+• Colchicine: GI intolerance common. Drug interactions with CYP3A4.
+`;
 
-// TG Management Protocols
-const TG_MANAGEMENT = [
-  {
-    level: "Borderline High (150–199 mg/dL)",
-    action: "Lifestyle intervention",
-    color: "text-warning",
-    bgColor: "bg-warning/5",
-    borderColor: "border-warning/20",
-    lifestyle: ["Weight loss (5–10%)", "Reduce refined carbohydrates", "Increase physical activity"],
-  },
-  {
-    level: "High (200–499 mg/dL)",
-    action: "Address secondary causes + lifestyle",
-    color: "text-orange-600",
-    bgColor: "bg-orange-500/5",
-    borderColor: "border-orange-500/20",
-    lifestyle: [
-      "Strict carbohydrate restriction",
-      "Limit alcohol",
-      "Optimize glycemic control",
-      "Consider fenofibrate if ASCVD risk",
-    ],
-  },
-  {
-    level: "Very High (≥500 mg/dL)",
-    action: "Urgent: Pancreatitis risk",
-    color: "text-danger",
-    bgColor: "bg-danger/5",
-    borderColor: "border-danger/20",
-    lifestyle: [
-      "Very low-fat diet (<15% calories)",
-      "Fibrate (fenofibrate preferred)",
-      "Omega-3 fatty acids (2–4 g/day)",
-      "Consider insulin if diabetic",
-    ],
-  },
-];
+interface Props {
+  laiResult: LAIResult;
+  onBackToAssessment: () => void;
+}
 
-// Treatment Algorithms by Risk Category
-const TREATMENT_ALGORITHMS = [
-  {
-    category: "Very High Risk ASCVD",
-    color: "text-danger",
-    bgColor: "bg-danger/5",
-    borderColor: "border-danger/20",
-    steps: [
-      "Start high-intensity statin → LDL <55 mg/dL (<1.4 mmol/L)",
-      "Add ezetimibe if not at goal",
-      "Add PCSK9 inhibitor if still not at goal",
-      "Consider bempedoic acid if statin-intolerant",
-      "Monitor adherence and lifestyle",
-    ],
-    targets: {
-      ldl: "<55 mg/dL",
-      nonHdl: "<85 mg/dL",
-      apoB: "<55 mg/dL (optional)",
-    },
-  },
-  {
-    category: "High Risk (Not Very High)",
-    color: "text-warning",
-    bgColor: "bg-warning/5",
-    borderColor: "border-warning/20",
-    steps: [
-      "Start moderate-intensity statin → LDL <70 mg/dL (<1.8 mmol/L)",
-      "Add ezetimibe if not at goal",
-      "Add bempedoic acid if statin-intolerant",
-      "Optional goal: <55 mg/dL if tolerated",
-    ],
-    targets: {
-      ldl: "<70 mg/dL",
-      nonHdl: "<100 mg/dL",
-      apoB: "<70 mg/dL (optional)",
-    },
-  },
-  {
-    category: "Severe Hypercholesterolemia (LDL ≥190)",
-    color: "text-purple-600",
-    bgColor: "bg-purple-500/5",
-    borderColor: "border-purple-500/20",
-    steps: [
-      "Cascade screening + genetic testing",
-      "High-intensity statin immediately",
-      "Add ezetimibe",
-      "Add PCSK9 inhibitor if not at goal",
-      "LDL apheresis for homozygous FH",
-    ],
-    targets: {
-      ldl: "<100 mg/dL (or ↓≥50%)",
-      nonHdl: "<130 mg/dL",
-      apoB: "<100 mg/dL",
-    },
-  },
-];
+export default function LipidsTreatment({ laiResult, onBackToAssessment }: Props) {
+  const { cat, sub, ldlTarget, nonHdlTarget, apoBTarget, intensity, drug, ldlCurrent, atTarget, riskFactors } = laiResult;
+  const key = cat + (sub ? "-" : "") + sub;
+  const rec = TREATMENT_RECS[key] || TREATMENT_RECS["LOW"];
 
-// Statin Intolerance Management
-const STATIN_INTOLERANCE = [
-  {
-    step: 1,
-    title: "Confirm Intolerance",
-    description:
-      "Rule out secondary causes (hypothyroidism, drug interactions, vitamin D deficiency)",
-    color: "text-primary",
-  },
-  {
-    step: 2,
-    title: "Rechallenge",
-    description: "Try different statin (hydrophilic: pravastatin, rosuvastatin) or lower dose",
-    color: "text-warning",
-  },
-  {
-    step: 3,
-    title: "Alternate Day Dosing",
-    description: "Long-acting statins (rosuvastatin, atorvastatin) every other day",
-    color: "text-orange-600",
-  },
-  {
-    step: 4,
-    title: "Non-Statin Therapy",
-    description: "Ezetimibe ± bempedoic acid, consider PCSK9i if high risk",
-    color: "text-danger",
-  },
-];
+  const catColor = cat === "EHR" ? "bg-red-500 text-white" :
+    cat === "VHR" ? "bg-orange-500 text-white" :
+    cat === "HR" ? "bg-amber-500 text-white" :
+    cat === "MOD" ? "bg-yellow-500 text-white" :
+    "bg-green-500 text-white";
 
-// Lifestyle Recommendations
-const LIFESTYLE_RECOMMENDATIONS = [
-  {
-    category: "Diet",
-    icon: Utensils,
-    color: "text-emerald-600",
-    recommendations: [
-      "Reduce saturated fat to <6% of calories",
-      "Eliminate trans fats",
-      "Increase soluble fiber (oats, legumes) 10–25g/day",
-      "Add plant sterols/stanols 2g/day",
-      "Consider Mediterranean or DASH diet pattern",
-    ],
-  },
-  {
-    category: "Physical Activity",
-    icon: Activity,
-    color: "text-blue-600",
-    recommendations: [
-      "Aerobic activity: 150 min/week moderate or 75 min/week vigorous",
-      "Resistance training: 2 days/week",
-      "Reduce sedentary time",
-      "Can raise HDL-C by 5–10%",
-    ],
-  },
-  {
-    category: "Weight Management",
-    icon: TrendingDown,
-    color: "text-purple-600",
-    recommendations: [
-      "Target 5–10% weight loss if overweight/obese",
-      "Every 1 kg loss → LDL-C ↓ ~0.8 mg/dL",
-      "Improves TG, HDL-C, and metabolic syndrome",
-      "Consider GLP-1 agonists if BMI ≥30 or ≥27 with comorbidities",
-    ],
-  },
-];
-
-// Monitoring Schedule
-const MONITORING_SCHEDULE = [
-  {
-    timing: "Baseline",
-    assessments: ["Fasting lipid panel", "ALT", "CK (if muscle symptoms)", "TSH (if indicated)"],
-    color: "text-primary",
-    bgColor: "bg-primary/5",
-  },
-  {
-    timing: "4–12 weeks after initiation",
-    assessments: ["Repeat lipid panel", "Assess adherence", "Check for side effects"],
-    color: "text-warning",
-    bgColor: "bg-warning/5",
-  },
-  {
-    timing: "Every 3–12 months",
-    assessments: ["Lipid panel", "Reinforce lifestyle", "Monitor goals"],
-    color: "text-emerald-600",
-    bgColor: "bg-emerald-500/5",
-  },
-];
-
-export default function LipidsTreatment() {
-  const [openIntensity, setOpenIntensity] = useState<string | null>("high");
-  const [openAlgorithm, setOpenAlgorithm] = useState<string | null>(null);
+  const generateSummary = () => {
+    return [
+      "LIPID MANAGEMENT PLAN — LAI 2023",
+      `Category: ${laiResult.label} (LDL target < ${ldlTarget} mg/dL)`,
+      `Current LDL: ${ldlCurrent} mg/dL — ${atTarget ? "AT TARGET" : "ABOVE TARGET"}`,
+      `Therapy: ${intensity}`,
+      `Drug: ${drug}`,
+      "",
+      "TREATMENT PLAN:",
+      rec.rationale,
+      "",
+      "TARGETS:",
+      ...TREATMENT_RECS[key]?.targets?.map(t => `  • ${t}`) || [],
+      "",
+      "FOLLOW-UP:",
+      rec.followUp,
+      "",
+      "ALTERNATIVES:",
+      rec.alternative,
+    ].join("\n");
+  };
 
   return (
     <div className="space-y-6">
-      {/* Statin Intensity Guide */}
-      <Card className="border-blue-500/30 bg-blue-500/5 p-5">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/20">
-            <Pill className="h-5 w-5 text-blue-500" />
+
+      {/* ─── Header Card ─── */}
+      <Card className={`p-5 border-2 ${cat === "EHR" ? "border-red-300 bg-red-50" : cat === "VHR" ? "border-orange-300 bg-orange-50" : cat === "HR" ? "border-amber-300 bg-amber-50" : cat === "MOD" ? "border-yellow-300 bg-yellow-50" : "border-green-300 bg-green-50"}`}>
+        <div className="flex items-start justify-between mb-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className={`text-xl font-bold px-2.5 py-0.5 rounded-lg ${catColor}`}>
+                {cat}{sub && `-${sub}`}
+              </span>
+              <span className="text-lg font-semibold text-foreground">{laiResult.label}</span>
+            </div>
+            <div className="flex items-center gap-3 mt-2 text-sm">
+              <span className="text-muted-foreground">Current LDL: <strong className={atTarget ? "text-green-600" : "text-red-600"}>{ldlCurrent || "—"} mg/dL</strong></span>
+              <span className="text-muted-foreground">Target: <strong>&lt; {ldlTarget} mg/dL</strong></span>
+              <Badge variant={atTarget ? "default" : "destructive"} className="text-[10px]">{atTarget ? "At target ✅" : "Above target ⚠"}</Badge>
+            </div>
+          </div>
+          <Pill className="h-6 w-6 text-primary" />
+        </div>
+        <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground mt-3 pt-3 border-t">
+          <span><strong>Non-HDL:</strong> {nonHdlTarget}</span>
+          <span><strong>ApoB:</strong> {apoBTarget}</span>
+          <span><strong>Intensity:</strong> {intensity}</span>
+        </div>
+      </Card>
+
+      {/* ─── Prescription ─── */}
+      <SectionCard title="Treatment Prescription" icon={<Pill className="h-4 w-4" />} tone="primary" collapsible={false}>
+        <div className="space-y-4">
+          <div className="p-4 rounded-lg border border-primary/20 bg-primary/5">
+            <p className="text-sm font-bold text-foreground mb-1">{rec.title}</p>
+            <p className="text-sm text-foreground"><AbbrText text={rec.drug} /></p>
           </div>
           <div>
-            <h3 className="font-display text-lg font-bold text-foreground">Statin Intensity Guide</h3>
-            <p className="text-sm text-muted-foreground">
-              Select appropriate statin intensity based on patient risk profile
-            </p>
+            <p className="text-xs font-semibold text-muted-foreground mb-1">Rationale</p>
+            <p className="text-sm text-foreground"><AbbrText text={rec.rationale} /></p>
           </div>
-        </div>
-
-        <div className="space-y-4">
-          {STATIN_INTENSITY.map((intensity) => (
-            <Collapsible
-              key={intensity.category}
-              open={openIntensity === intensity.category}
-              onOpenChange={(open) => setOpenIntensity(open ? intensity.category : null)}
-            >
-              <div className={`rounded-lg border ${intensity.borderColor} ${intensity.bgColor} overflow-hidden`}>
-                <CollapsibleTrigger className="w-full">
-                  <div className="flex items-center justify-between p-4 cursor-pointer hover:opacity-80 transition-opacity">
-                    <div className="flex items-center gap-3">
-                      <span className={`font-semibold ${intensity.color}`}>{intensity.category}</span>
-                      <span className="text-xs text-muted-foreground">({intensity.goal})</span>
-                    </div>
-                    <ChevronDown
-                      className={`h-4 w-4 transition-transform ${
-                        openIntensity === intensity.category ? "rotate-180" : ""
-                      }`}
-                    />
-                  </div>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <div className="px-4 pb-4 space-y-3">
-                    <div>
-                      <p className="text-xs font-semibold text-muted-foreground mb-2">Available Statins:</p>
-                      <div className="grid grid-cols-2 gap-2">
-                        {intensity.statins.map((statin) => (
-                          <div
-                            key={statin.name}
-                            className="flex justify-between items-center p-2 rounded bg-background border border-border/50 text-sm"
-                          >
-                            <span className="font-medium">{statin.name}</span>
-                            <span className="text-xs text-muted-foreground">{statin.dose}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-muted-foreground mb-2">Indications:</p>
-                      <ul className="space-y-1">
-                        {intensity.indications.map((ind, idx) => (
-                          <li key={idx} className="text-sm flex items-start gap-2">
-                            <span className={`${intensity.color} mt-1`}>•</span>
-                            <span>{ind}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </CollapsibleContent>
-              </div>
-            </Collapsible>
-          ))}
-        </div>
-      </Card>
-
-      {/* Treatment Algorithms by Risk Category */}
-      <Card className="border-border bg-card p-5">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500/20 to-teal-500/20 backdrop-blur-md border border-emerald-500/30">
-            <Activity className="h-5 w-5 text-emerald-500" />
-          </div>
-          <h3 className="font-display text-lg font-bold text-foreground">Treatment Algorithms</h3>
-        </div>
-
-        <div className="space-y-3">
-          {TREATMENT_ALGORITHMS.map((algo) => (
-            <Collapsible
-              key={algo.category}
-              open={openAlgorithm === algo.category}
-              onOpenChange={(open) => setOpenAlgorithm(open ? algo.category : null)}
-            >
-              <div className={`rounded-lg border ${algo.borderColor} ${algo.bgColor} overflow-hidden`}>
-                <CollapsibleTrigger className="w-full">
-                  <div className="flex items-center justify-between p-4 cursor-pointer hover:opacity-80 transition-opacity">
-                    <span className={`font-semibold ${algo.color}`}>{algo.category}</span>
-                    <ChevronDown
-                      className={`h-4 w-4 transition-transform ${
-                        openAlgorithm === algo.category ? "rotate-180" : ""
-                      }`}
-                    />
-                  </div>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <div className="px-4 pb-4 space-y-4">
-                    <div className="grid grid-cols-3 gap-2 p-3 rounded-lg bg-background border border-border/50">
-                      <div className="text-center">
-                        <p className="text-xs text-muted-foreground">LDL-C Target</p>
-                        <p className={`font-bold ${algo.color}`}>{algo.targets.ldl}</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-xs text-muted-foreground">Non-HDL-C</p>
-                        <p className="font-bold text-foreground">{algo.targets.nonHdl}</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-xs text-muted-foreground">ApoB (optional)</p>
-                        <p className="font-bold text-foreground">{algo.targets.apoB}</p>
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="text-xs font-semibold text-muted-foreground mb-2">Step-by-Step:</p>
-                      <ol className="space-y-2">
-                        {algo.steps.map((step, idx) => (
-                          <li key={idx} className="text-sm flex items-start gap-2">
-                            <span className={`${algo.color} font-bold mt-0.5 min-w-[20px]`}>{idx + 1}.</span>
-                            <span>{step}</span>
-                          </li>
-                        ))}
-                      </ol>
-                    </div>
-                  </div>
-                </CollapsibleContent>
-              </div>
-            </Collapsible>
-          ))}
-        </div>
-      </Card>
-
-      {/* Add-on Therapy Options */}
-      <Card className="border-border bg-card p-5">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-md border border-purple-500/30">
-            <Pill className="h-5 w-5 text-purple-500" />
-          </div>
-          <h3 className="font-display text-lg font-bold text-foreground">Add-On Therapy Options</h3>
-        </div>
-
-        <div className="space-y-4">
-          {ADDON_THERAPIES.map((therapy) => (
-            <div
-              key={therapy.name}
-              className={`rounded-lg border ${therapy.borderColor} ${therapy.bgColor} p-4`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <h4 className={`font-semibold ${therapy.color}`}>{therapy.name}</h4>
-                  {therapy.firstLine && (
-                    <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-600">
-                      First-Line
-                    </span>
-                  )}
-                </div>
-                <span className="text-xs font-medium text-muted-foreground">{therapy.class}</span>
-              </div>
-
-              <p className="text-sm text-foreground mb-2">{therapy.mechanism}</p>
-
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs text-muted-foreground">LDL-C Reduction:</span>
-                <span className={`text-sm font-bold ${therapy.color}`}>{therapy.ldlReduction}</span>
-              </div>
-
-              {"agents" in therapy && therapy.agents && (
-                <div className="space-y-1 mb-2">
-                  {therapy.agents.map((agent) => (
-                    <div key={agent.name} className="flex justify-between text-sm">
-                      <span className="font-medium">{agent.name}</span>
-                      <span className="text-xs text-muted-foreground">{agent.dosing}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {"dosing" in therapy && !("agents" in therapy) && (
-                <p className="text-sm text-muted-foreground mb-2">Dosing: {therapy.dosing}</p>
-              )}
-
-              {"indications" in therapy && therapy.indications && (
-                <div className="mt-2">
-                  <p className="text-xs font-semibold text-muted-foreground mb-1">Key Indications:</p>
-                  <ul className="space-y-1">
-                    {therapy.indications.map((ind, idx) => (
-                      <li key={idx} className="text-xs flex items-start gap-2">
-                        <span className={therapy.color}>•</span>
-                        <span>{ind}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {"notes" in therapy && therapy.notes && (
-                <p className="mt-2 text-xs text-muted-foreground italic">{therapy.notes}</p>
-              )}
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      {/* TG Management Protocols */}
-      <Card className="border-amber-500/30 bg-amber-500/5 p-5">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/20">
-            <AlertCircle className="h-5 w-5 text-amber-500" />
-          </div>
-          <div>
-            <h3 className="font-display text-lg font-bold text-foreground">Triglyceride Management</h3>
-            <p className="text-sm text-muted-foreground">Risk-based approach to elevated triglycerides</p>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          {TG_MANAGEMENT.map((tg) => (
-            <div
-              key={tg.level}
-              className={`rounded-lg border ${tg.borderColor} ${tg.bgColor} p-4`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className={`font-semibold ${tg.color}`}>{tg.level}</span>
-                <span className="text-xs font-medium text-muted-foreground">{tg.action}</span>
-              </div>
-              <ul className="space-y-1">
-                {tg.lifestyle.map((item, idx) => (
-                  <li key={idx} className="text-sm flex items-start gap-2">
-                    <span className={tg.color}>•</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-4 rounded-lg border border-amber-500/20 bg-background p-3">
-          <div className="flex items-center gap-2 mb-2">
-            <Info className="h-4 w-4 text-amber-500" />
-            <p className="text-xs font-semibold text-foreground">Pancreatitis Risk Threshold</p>
-          </div>
-          <p className="text-sm text-foreground">
-            TG ≥500 mg/dL (≥5.6 mmol/L) significantly increases pancreatitis risk. Urgent
-            intervention required with very low-fat diet and fibrate therapy.
-          </p>
-        </div>
-      </Card>
-
-      {/* Statin Intolerance Management */}
-      <SectionCard
-        title="Statin Intolerance Management"
-        tone="cyan"
-        icon={<AlertCircle className="h-4 w-4" />}
-        defaultOpen={false}
-      >
-        <div className="space-y-3">
-          {STATIN_INTOLERANCE.map((step) => (
-            <div
-              key={step.step}
-              className="flex items-start gap-3 p-3 rounded-lg border border-border bg-muted/20"
-            >
-              <div
-                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${step.color.replace("text-", "bg-").replace("600", "500")}/20`}
-              >
-                <span className={`text-xs font-bold ${step.color}`}>{step.step}</span>
-              </div>
-              <div>
-                <p className={`font-semibold ${step.color} mb-1`}>{step.title}</p>
-                <p className="text-sm text-foreground">{step.description}</p>
-              </div>
-            </div>
-          ))}
+          <p className="text-xs text-muted-foreground/80 leading-relaxed"><AbbrText text={rec.mechanism} /></p>
         </div>
       </SectionCard>
 
-      {/* Lifestyle Recommendations */}
-      <SectionCard
-        title="Lifestyle Interventions"
-        tone="emerald"
-        icon={<Utensils className="h-4 w-4" />}
-        defaultOpen={false}
-      >
-        <div className="space-y-4">
-          {LIFESTYLE_RECOMMENDATIONS.map((item) => (
-            <div key={item.category} className="rounded-lg border border-border bg-muted/20 p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <div className={`flex h-8 w-8 items-center justify-center rounded-md ${item.color.replace("text-", "bg-").replace("600", "500")}/20`}>
-                  <item.icon className={`h-4 w-4 ${item.color}`} />
-                </div>
-                <h4 className={`font-semibold ${item.color}`}>{item.category}</h4>
-              </div>
-              <ul className="space-y-1 ml-10">
-                {item.recommendations.map((rec, idx) => (
-                  <li key={idx} className="text-sm flex items-start gap-2">
-                    <span className={item.color}>•</span>
-                    <span>{rec}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+      {/* ─── Targets ─── */}
+      <SectionCard title="Treatment Targets" icon={<Target className="h-4 w-4" />} tone="indigo" collapsible={false}>
+        <ul className="space-y-2">
+          {(TREATMENT_RECS[key]?.targets || []).map((t, i) => (
+            <li key={i} className="flex items-start gap-2 p-2 rounded-lg bg-muted/30">
+              <span className={`w-1.5 h-1.5 rounded-full mt-2 ${cat === "EHR" ? "bg-red-500" : cat === "VHR" ? "bg-orange-500" : "bg-primary"}`} />
+              <span className="text-sm text-foreground"><AbbrText text={t} /></span>
+            </li>
           ))}
+        </ul>
+      </SectionCard>
+
+      {/* ─── Follow-up & Monitoring ─── */}
+      <SectionCard title="Follow-Up & Monitoring" icon={<Activity className="h-4 w-4" />} tone="emerald" collapsible={false}>
+        <div className="space-y-3">
+          <div><p className="text-xs font-semibold text-muted-foreground mb-1">Follow-Up</p><p className="text-sm text-foreground"><AbbrText text={rec.followUp} /></p></div>
+          <div><p className="text-xs font-semibold text-muted-foreground mb-1">Safety Monitoring</p><p className="text-sm text-foreground whitespace-pre-line">{SAFETY_NOTE}</p></div>
         </div>
       </SectionCard>
 
-      {/* Monitoring Schedule */}
-      <SectionCard
-        title="Monitoring Schedule"
-        tone="indigo"
-        icon={<Activity className="h-4 w-4" />}
-        defaultOpen={false}
-      >
-        <div className="space-y-3">
-          {MONITORING_SCHEDULE.map((monitor) => (
-            <div
-              key={monitor.timing}
-              className={`rounded-lg border border-border ${monitor.bgColor} p-4`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className={`font-semibold ${monitor.color}`}>{monitor.timing}</span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {monitor.assessments.map((assessment) => (
-                  <span
-                    key={assessment}
-                    className="rounded-full bg-background border border-border px-2 py-1 text-xs"
-                  >
-                    {assessment}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
+      {/* ─── Alternative Options ─── */}
+      <SectionCard title="Alternative Options" icon={<Stethoscope className="h-4 w-4" />} tone="amber" collapsible={false}>
+        <p className="text-sm text-foreground"><AbbrText text={rec.alternative} /></p>
+      </SectionCard>
+
+      {/* ─── Statin Potency Reference ─── */}
+      <SectionCard title="Statin & Add-on Potency Reference" icon={<BookOpen className="h-4 w-4" />} tone="neutral" defaultOpen={false}>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left py-2 pr-3 font-semibold text-muted-foreground">Drug</th>
+                <th className="text-left py-2 pr-3 font-semibold text-muted-foreground">Potency</th>
+                <th className="text-left py-2 font-semibold text-muted-foreground">LDL Reduction</th>
+              </tr>
+            </thead>
+            <tbody className="text-foreground">
+              {STATIN_TABLE.map((row, i) => (
+                <tr key={i} className="border-b border-border/50">
+                  <td className="py-1.5 pr-3"><AbbrText text={row.drug} /></td>
+                  <td className="py-1.5 pr-3">{row.potency}</td>
+                  <td className="py-1.5">{row.ldlReduction}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </SectionCard>
+
+      {/* ─── Summary Note ─── */}
+      <SectionCard title="Summary Plan (Copy to EMR)" icon={<FileText className="h-4 w-4" />} tone="neutral">
+        <textarea readOnly value={generateSummary()} className="w-full h-40 rounded-lg border border-input bg-muted/30 p-3 text-sm font-mono resize-none" />
+        <Button variant="outline" className="w-full mt-3" onClick={() => { navigator.clipboard.writeText(generateSummary()); toast.success("Copied"); }}>
+          <ClipboardCopy className="h-4 w-4 mr-1.5" /> Copy Plan
+        </Button>
+      </SectionCard>
+
+      {/* ─── Back to Assessment ─── */}
+      <div className="flex justify-center">
+        <Button variant="outline" onClick={onBackToAssessment} className="gap-1.5">
+          <ArrowLeft className="h-4 w-4" /> Back to Risk Assessment
+        </Button>
+      </div>
     </div>
   );
 }
