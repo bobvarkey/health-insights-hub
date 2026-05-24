@@ -6,9 +6,10 @@
     "strict": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": [
-        "src/ncd-app/*"
+        "./src/ncd-app/*"
       ]
     }
   },
